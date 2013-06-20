@@ -7,7 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FacebookManager.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <FacebookManagerDelegate>
+{
 
+}
+- (IBAction)clickWhyFacebook:(id)sender;
+- (IBAction)clickCreateAccount:(id)sender;
+- (IBAction)clickLogInWithFacebook:(id)sender;
+- (IBAction)clickLogInWithEmail:(id)sender;
 @end
