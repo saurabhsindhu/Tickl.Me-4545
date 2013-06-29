@@ -89,7 +89,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"%d", self.lstTitles.count);
+   // NSLog(@"%d", self.lstTitles.count);
     return self.lstTitles.count;
 }
 
@@ -207,7 +207,7 @@
     NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     destPath = [destPath stringByAppendingPathComponent:@"userName.plist"];
     
-    NSLog(@"tft%@",destPath);
+    //NSLog(@"tft%@",destPath);
     
     
     NSDictionary *dictValue = [[NSDictionary alloc]
@@ -215,7 +215,7 @@
     
     NSString *strVal = [dictValue objectForKey:@"userName"];
     
-    NSLog(@"JSON String 1%@",strVal);
+    // NSLog(@"JSON String 1%@",strVal);
 
     NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"http://108.168.203.226:8123/users/userLogout"]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
        
@@ -248,7 +248,7 @@
     NSLog(@"requestFinished%@",request);
     
     NSString *responseString=[[request responseString]stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    NSLog(@"Response %@",responseString);
+    //NSLog(@"Response %@",responseString);
 
     
 }

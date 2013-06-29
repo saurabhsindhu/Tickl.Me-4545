@@ -174,14 +174,12 @@ static FacebookManager *sharedInstance = nil;
     [facebook_ requestWithMethodName:@"photos.upload" andParams:args andHttpMethod:@"POST" andDelegate:self];
 }
 
--(void) getFriends{ 
-    
+-(void) getFriends{
     NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"name,id,picture,installed", @"fields", nil];
-    
-    self.reqFriendList = [facebook_ requestWithGraphPath:@"me/friends" andParams:params andDelegate:self];
-    //[facebook_ requestWithGraphPath:@"me/friends" andDelegate: self ];
-    
-    
+    @autoreleasepool {
+        self.reqFriendList = [facebook_ requestWithGraphPath:@"me/friends" andParams:params andDelegate:self];
+        //[facebook_ requestWithGraphPath:@"me/friends" andDelegate: self ];
+    }
 }
 
 -(void) getMyInfo
@@ -198,6 +196,10 @@ static FacebookManager *sharedInstance = nil;
     self.reqMyLike = [facebook_ requestWithGraphPath:@"me" andParams:params1 andDelegate:self];
     
     [params1 objectForKey:@"email"];
+    
+//    [params1 objectForKey:@"picture"];
+    
+    NSLog(@"%@",[params1 objectForKey:@"picture"]);
     
     
     
@@ -321,9 +323,13 @@ static FacebookManager *sharedInstance = nil;
 
 - (void)request:(FBRequest *)request didLoad:(id)result {
     
-    //the list of likes...
+ 
+    if (request == self.reqFriendList) {
+        [self processFriendsQuery: result];
+    }
     
-    //[self getFriends];
+    else {
+
     
     NSString *requestType = [request.params objectForKey:@"requestType"];
     
@@ -338,16 +344,6 @@ static FacebookManager *sharedInstance = nil;
 //         NSLog(@"%@",result);
         
         data = [result objectForKey:@"data"];
-        
-//        for (int val; val < [data count]; val++) {
-//            
-//            [newArr addObject:[data objectAtIndex:val]];
-//            
-//        }
-//        
-//    
-//        NSLog(@"MY VAL%@",newArr);
-        
         
         /* FQL
          for (NSDictionary *pageID in data) {
@@ -495,6 +491,7 @@ static FacebookManager *sharedInstance = nil;
         
         NSString *email = (NSString*)[hash valueForKey:@"email"];
         
+        
         NSString *firstName = (NSString*)[hash valueForKey:@"first_name"];
         
         NSString *lastName = (NSString*)[hash valueForKey:@"last_name"];
@@ -507,8 +504,23 @@ static FacebookManager *sharedInstance = nil;
         
         [[NSUserDefaults standardUserDefaults] setObject:lastName forKey:@"last_name"];
         
+        //user picture...
+        
+        
+        NSURL *urlPic = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?", username]];
+        
+        NSString *strURL = [NSString stringWithFormat:@"%@",urlPic];
+        
+        NSData *dataByte = [NSData dataWithContentsOfURL:urlPic];
+        
+       // NSDictionary *urlP = [NSDictionary dictionaryWithObject:urlPic forKey:@"URL"];
+                              
+        UIImage *profilePic = [[UIImage alloc] initWithData:dataByte];
+        
+        NSLog(@"%@",profilePic);
+        
         //
-        NSDictionary *dict = [[NSDictionary alloc]initWithObjectsAndKeys:firstName,@"first_name",lastName,@"last_name",email,@"email",username,@"id", nil];
+        NSDictionary *dict = [[NSDictionary alloc]initWithObjectsAndKeys:firstName,@"first_name",lastName,@"last_name",email,@"email",username,@"id",strURL,@"URL", nil];
         
         NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"http://108.168.203.226:8123/users/getFacebookUser/"]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         
@@ -534,7 +546,7 @@ static FacebookManager *sharedInstance = nil;
         
         NSMutableDictionary *arrValue = [[NSMutableDictionary alloc]init];
         
-        [arrValue setObject:username forKey:@"uid"];
+        [arrValue setObject:username forKey:@"facebook_id"];
         
         [arrValue writeToFile:destPath atomically:YES];
 
@@ -568,6 +580,8 @@ static FacebookManager *sharedInstance = nil;
     [requestUrl startAsynchronous];
 
     }
+        
+  }
 }
 
 #pragma mark ASIHTTPReq Delegate

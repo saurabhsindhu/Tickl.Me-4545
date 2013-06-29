@@ -15,11 +15,13 @@
 #import <Accounts/Accounts.h>
 #import "FBConnect.h"
 
-@interface AddFriendViewController : UIViewController<FacebookManagerDelegate> //FacebookManagerDelegate,FBSessionDelegate,FBDialogDelegate
+@interface AddFriendViewController : UIViewController<FacebookManagerDelegate,FBRequestDelegate>
 
 {
     NSMutableArray *arrFriendList;
+    NSMutableArray *arrFacebookFriend;
     IBOutlet UITableView *tblAddFriend;
+    IBOutlet UITableView *tblFollowers;
     NSMutableArray *contactsMutableArray;
     IBOutlet UIView *mailView;
     IBOutlet UIButton *scan;
@@ -31,17 +33,33 @@
     ACAccount *myAccount;
     NSMutableString *paramString;
     NSMutableArray *resultFollowersNameList;
+    
+    int currentMaxDisplayedCell;
+    BOOL dataLoading;
+    NSMutableArray *tweets;
+    
+    UIAlertView *loadingAlertView;
+    NSMutableArray *fndname;
+    
+    //facebook
+    
+    int _pageNo;
+    NSMutableArray *_friends;
+    Facebook *_facebook;
 
 }
 
 @property(nonatomic,retain) ACAccount *myAccount;
 @property(nonatomic, retain) NSMutableString *paramString;
 @property(nonatomic, retain) NSMutableArray *resultFollowersNameList;
+@property (nonatomic, retain) Facebook *facebook;
+@property (nonatomic, strong) FBRequest*    reqFriendList;
 
 
 - (IBAction)btnSegentEmailCliceked:(UISegmentedControl *)sender;
 - (void)btnBackClicked:(id)sender;
 -(void)sendInvitaionFormApp;
+- (id)initWithFacebook:(Facebook*)fb;
 
 
 

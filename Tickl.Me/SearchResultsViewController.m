@@ -14,6 +14,7 @@
 #import "AsyncImageView.h"
 #import "JSON.h"
 #import "MBProgressHUD.h"
+#import "SearchDetail.h"
 
 #define ASYNC_IMAGE_TAG 9999
 
@@ -67,6 +68,29 @@
     description = [[NSMutableArray alloc]init];
     
     thumImages = [[NSMutableArray alloc]init];
+    
+    time = [[NSMutableArray alloc]init];
+    
+    venue = [[NSMutableArray alloc]init];
+    
+    price = [[NSMutableArray alloc]init];
+    
+    desc = [[NSMutableArray alloc]init];
+    
+    address = [[NSMutableArray alloc]init];
+    
+    city = [[NSMutableArray alloc]init];
+    
+    state = [[NSMutableArray alloc]init];
+    
+    zip = [[NSMutableArray alloc]init];
+    
+    phone = [[NSMutableArray alloc]init];
+
+    udid =  [[NSMutableArray alloc]init];
+    
+    endtime = [[NSMutableArray alloc]init];
+    
 
     arrTotalEvent=[[NSMutableArray alloc]initWithObjects: nil];
     
@@ -83,6 +107,8 @@
         
         [eventShedule addObject:[[status objectForKey:@"EventSchedule"]objectForKey:@"start_time"]];
         
+        [endtime addObject:[[status objectForKey:@"EventSchedule"]objectForKey:@"end_time"]];
+        
         [eventType addObject:[[status objectForKey:@"Event"]objectForKey:@"event_type"]];
         
         [longitude addObject:[[status objectForKey:@"Venue"]objectForKey:@"lon"]];
@@ -91,7 +117,17 @@
         
         [venueAddress addObject:[[status objectForKey:@"Venue"]objectForKey:@"address"]];
         
+        [city addObject:[[status objectForKey:@"Venue"]objectForKey:@"city"]];
+        
+         [state addObject:[[status objectForKey:@"Venue"]objectForKey:@"state"]];
+        
+         [zip addObject:[[status objectForKey:@"Venue"]objectForKey:@"zip"]];
+        
+         [phone addObject:[[status objectForKey:@"Venue"]objectForKey:@"phone"]];
+        
         [description addObject:[[status objectForKey:@"Performer"]objectForKey:@"description"]];
+        
+        [udid addObject:[[status objectForKey:@"Event"]objectForKey:@"id"]];
         
     }
 
@@ -224,6 +260,27 @@
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    SearchDetail *search = [[SearchDetail alloc]initWithNibName:@"SearchDetail" bundle:nil];
+    
+    search.venue_name = [arrayToEvents objectAtIndex:indexPath.row];
+    search.start_time = [eventShedule objectAtIndex:indexPath.row];
+    //search.prices = [price objectAtIndex:indexPath.row];
+    search.description = [description objectAtIndex:indexPath.row];
+    search.address = [venueAddress objectAtIndex:indexPath.row];
+    search.city = [city objectAtIndex:indexPath.row];
+    search.zip = [zip objectAtIndex:indexPath.row];
+    search.phone = [phone objectAtIndex:indexPath.row];
+    search.lat = [latitude objectAtIndex:indexPath.row];
+    search.longit = [longitude objectAtIndex:indexPath.row];
+    search.udid = [udid objectAtIndex:indexPath.row];
+    search.endTime = [endtime objectAtIndex:indexPath.row];
+    
+    [[self navigationController]pushViewController:search animated:YES];
+    
 }
 
 -(UIImage*)displayImage:(NSString *)imageUrl

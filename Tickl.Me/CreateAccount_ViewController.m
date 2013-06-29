@@ -43,7 +43,7 @@
         lblCPasswordRequired.hidden = YES;
         lblConfirmPswd.hidden = YES;
         lblUnameRequired.hidden = YES;
-        isChecked = NO;
+        isChecked = YES;
         
         BOOL isPortrait = UIDeviceOrientationIsPortrait(self.interfaceOrientation);
         if (isPortrait)
@@ -539,58 +539,52 @@
     
     -(IBAction) isAgreeClicked:(id)sender
     {
-        if ([txtDOB.text length]<=0)
-        {
-            UIAlertView *alert1 = [[UIAlertView alloc] initWithTitle:@"Message" message:@"Firstly, fill your Date of Birth." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-            [alert1 show];
-        }
-        else
-        {
-            if(rememberMeBtn.imageView.image == [UIImage imageNamed:@"Check_red.png"])
+            if(rememberMeBtn.imageView.image == [UIImage imageNamed:@"check_image.jpeg"])
             {
                 isChecked=NO;
-                UIImage * btnImage1 = [UIImage imageNamed:@"whiteCircle.png"];
-                [rememberMeBtn setImage:btnImage1 forState:UIControlStateNormal];
+               // UIImage * btnImage1 = [UIImage imageNamed:@"whiteCircle.png"];
+               //[rememberMeBtn setImage:btnImage1 forState:UIControlStateNormal];
                 
             }
-            else
+            else if(isChecked==YES)
             {
-                NSDate *now = [[NSDate alloc] init];
-                NSDate *endDate = datePicker.date;
-                NSTimeInterval timeDifference = [endDate timeIntervalSinceDate:now];
-                
-                NSDate *Date=[NSDate dateWithTimeIntervalSinceReferenceDate:timeDifference];
-                NSLog(@"time difference:%@",Date);
-                // The time interval
-                
-                
-                // Get the system calendar
-                NSCalendar *sysCalendar = [NSCalendar currentCalendar];
-                
-                // Get conversion to months, days, hours, minutes
-                unsigned int unitFlags = NSHourCalendarUnit | NSMinuteCalendarUnit | NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit;
-                
-                NSDateComponents *conversionInfo = [sysCalendar components:unitFlags fromDate:endDate
-                                                                    toDate:now  options:0];
-                
-                NSLog(@"Conversion: %dmin %dhours %ddays %dmoths %dyears",[conversionInfo minute], [conversionInfo hour], [conversionInfo day], [conversionInfo month], [conversionInfo year]);
-                NSInteger years=[conversionInfo year];
-                NSLog(@"%d",years);
-                if(years < 21)
-                {
-                    UIAlertView *alert1 = [[UIAlertView alloc] initWithTitle:@"Message" message:@"You must be 21 years of age or older to sign up for Stuff2du." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                    alert1.tag=1;
-                    [alert1 show];
-                    txtDOB.text = @"";
-                }
-                else
-                {
-                    isChecked=YES;
-                    UIImage * btnImage1 = [UIImage imageNamed:@"Check_red.png"];
-                    [rememberMeBtn setImage:btnImage1 forState:UIControlStateNormal];
-                }
+                [rememberMeBtn setImage:[UIImage imageNamed:@"check_image.jpeg"] forState:UIControlStateNormal];
+//                NSDate *now = [[NSDate alloc] init];
+//                NSDate *endDate = datePicker.date;
+//                NSTimeInterval timeDifference = [endDate timeIntervalSinceDate:now];
+//                
+//                NSDate *Date=[NSDate dateWithTimeIntervalSinceReferenceDate:timeDifference];
+//                NSLog(@"time difference:%@",Date);
+//                // The time interval
+//                
+//                
+//                // Get the system calendar
+//                NSCalendar *sysCalendar = [NSCalendar currentCalendar];
+//                
+//                // Get conversion to months, days, hours, minutes
+//                unsigned int unitFlags = NSHourCalendarUnit | NSMinuteCalendarUnit | NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit;
+//                
+//                NSDateComponents *conversionInfo = [sysCalendar components:unitFlags fromDate:endDate
+//                                                                    toDate:now  options:0];
+//                
+//                NSLog(@"Conversion: %dmin %dhours %ddays %dmoths %dyears",[conversionInfo minute], [conversionInfo hour], [conversionInfo day], [conversionInfo month], [conversionInfo year]);
+//                NSInteger years=[conversionInfo year];
+//                NSLog(@"%d",years);
+//                if(years < 21)
+//                {
+//                    UIAlertView *alert1 = [[UIAlertView alloc] initWithTitle:@"Message" message:@"You must be 21 years of age or older to sign up for Stuff2du." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//                    alert1.tag=1;
+//                    [alert1 show];
+//                    txtDOB.text = @"";
+//                }
+//                else
+//                {
+//                    isChecked=YES;
+//                    UIImage * btnImage1 = [UIImage imageNamed:@"Check_red.png"];
+//                    [rememberMeBtn setImage:btnImage1 forState:UIControlStateNormal];
+//                }
             }
-        }
+        
     }
 
 

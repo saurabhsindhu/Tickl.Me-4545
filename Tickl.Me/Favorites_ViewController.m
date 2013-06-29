@@ -38,6 +38,12 @@
 {
     [super viewDidLoad];
     
+    copyListOfItems = [[NSMutableArray alloc] init];
+    searchTable.autocorrectionType = UITextAutocorrectionTypeNo;
+	
+	searching = NO;
+	letUserSelectRow = YES;
+    
     
     fbMgr = [FacebookManager sharedInstance];
     
@@ -50,11 +56,15 @@
     
     arrayToMusic = [[NSMutableArray alloc]init];
     
+    arrayToMusic = [arrayToMusic mutableCopy];
+    
     arrayToSports = [[NSMutableArray alloc]init];
     
     musicID = [[NSMutableArray alloc]init];
     
     sportsID = [[NSMutableArray alloc]init];
+    
+    searchData = [[NSMutableArray alloc] init];
     
    
     NSLog(@"Array Contents: %@", [statuses valueForKey:@"Sport"]);
@@ -109,8 +119,45 @@
         
         [arrTeams addObject:objTeams];
     }
-    suffixArray = [[NSMutableArray alloc] initWithObjects:@"{search}", @"#", @"A", @"B", @"C", @"D", @"E", @"F", @"G", @"H", @"I", @"J", @"K", @"K", @"M", @"N", @"O", @"P", @"Q", @"R", @"S", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z", nil];
+//    suffixArray = [[NSMutableArray alloc] initWithObjects:@"{search}", @"#", @"A", @"B", @"C", @"D", @"E", @"F", @"G", @"H", @"I", @"J", @"K", @"K", @"M", @"N", @"O", @"P", @"Q", @"R", @"S", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z", nil];
 }
+
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+	
+	if(searching)
+		return nil;
+	
+	NSMutableArray *tempArray = [[NSMutableArray alloc] init];
+	[tempArray addObject:@"A"];
+	[tempArray addObject:@"B"];
+	[tempArray addObject:@"C"];
+	[tempArray addObject:@"D"];
+	[tempArray addObject:@"E"];
+	[tempArray addObject:@"F"];
+	[tempArray addObject:@"G"];
+	[tempArray addObject:@"H"];
+	[tempArray addObject:@"I"];
+	[tempArray addObject:@"J"];
+	[tempArray addObject:@"K"];
+	[tempArray addObject:@"L"];
+	[tempArray addObject:@"M"];
+	[tempArray addObject:@"N"];
+	[tempArray addObject:@"O"];
+	[tempArray addObject:@"P"];
+	[tempArray addObject:@"Q"];
+	[tempArray addObject:@"R"];
+	[tempArray addObject:@"S"];
+	[tempArray addObject:@"T"];
+	[tempArray addObject:@"U"];
+	[tempArray addObject:@"V"];
+	[tempArray addObject:@"W"];
+	[tempArray addObject:@"X"];
+	[tempArray addObject:@"Y"];
+	[tempArray addObject:@"Z"];
+    
+	return tempArray;
+}
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -123,25 +170,7 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
--(BOOL)searchDisplayController:(UISearchDisplayController *)controller
-shouldReloadTableForSearchString:(NSString *)searchString
-{
-    [self filterContentForSearchText:searchString
-                               scope:[[self.searchDisplayController.searchBar scopeButtonTitles]
-                                      objectAtIndex:[self.searchDisplayController.searchBar
-                                                     selectedScopeButtonIndex]]];
-    
-    return YES;
-}
 
-- (void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope
-{
-    NSPredicate *resultPredicate = [NSPredicate
-                                    predicateWithFormat:@"SELF contains[cd] %@",
-                                    searchText];
-    
-    searchResults = [array filteredArrayUsingPredicate:resultPredicate];
-}
 
 - (void)clickNext:(id)sender
 {
@@ -196,10 +225,14 @@ shouldReloadTableForSearchString:(NSString *)searchString
     return 1;//[suffixArray count];
 }
 
-- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
-{
-     return suffixArray;
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
+    
+	if(searching)
+		return -1;
+	
+	return index % 2;
 }
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -211,18 +244,20 @@ shouldReloadTableForSearchString:(NSString *)searchString
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
 	}
     
+    if (searching) {
+        
+       cell.textLabel.text=[copyListOfItems objectAtIndex:indexPath.row]; 
+    }
+    
     if([clickedSegmentBarTitle isEqualToString:@"performers"])
     {
         
-    if (tableView == self.searchDisplayController.searchResultsTableView) {
-            cell.textLabel.text = [searchResults objectAtIndex:indexPath.row];
-    }
-    
-    else{
-       //objPerformers=[fbMgr.myLikes objectAtIndex:indexPath.row];
+         //objPerformers=[fbMgr.myLikes objectAtIndex:indexPath.row];
+       NSLog(@"%@",arrayToMusic);
+        
        cell.textLabel.text=[arrayToMusic objectAtIndex:indexPath.row];
     }
-    }
+    
     else if([clickedSegmentBarTitle isEqualToString:@"teams" ])
     {
         cell.textLabel.text=[arrayToSports objectAtIndex:indexPath.row];
@@ -242,14 +277,14 @@ shouldReloadTableForSearchString:(NSString *)searchString
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if (searching)
+		return [copyListOfItems count];
+    
     if([clickedSegmentBarTitle isEqualToString:@"performers"])
         return arrayToMusic.count;
      if([clickedSegmentBarTitle isEqualToString:@"teams"])
          return arrayToSports.count;
     
-    if (tableView == self.searchDisplayController.searchResultsTableView) {
-        return [searchResults count];
-    }
     return 0;
 }
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -283,11 +318,17 @@ shouldReloadTableForSearchString:(NSString *)searchString
             NSData* postData = [jsonData dataUsingEncoding:NSUTF8StringEncoding];
             [request appendPostData:postData];
             [request setDelegate:self];
+            
+                       
             [request startAsynchronous];
-
+            
          
             
-          // [arrayToMusic removeObjectAtIndex:indexPath.row];
+            [super setEditing:YES animated:YES];
+            [tableListView setEditing:YES animated:NO];
+            
+            [tableListView reloadData];
+            
         }
             else if([clickedSegmentBarTitle isEqualToString:@"teams" ])
         {
@@ -309,10 +350,7 @@ shouldReloadTableForSearchString:(NSString *)searchString
           // [arrayToSports removeObjectAtIndex:indexPath.row];
         }
         
-        [super setEditing:YES animated:YES];
-		[tableListView setEditing:YES animated:NO];
-        
-        [tableListView reloadData];
+       
 	}
     
 }
@@ -345,10 +383,115 @@ shouldReloadTableForSearchString:(NSString *)searchString
 
 #pragma UISearchBar delegate
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    [searchBar resignFirstResponder];
-}
+#pragma mark -
+#pragma mark Search Bar
+
+//- (void) searchBarTextDidBeginEditing:(UISearchBar *)theSearchBar {
+//	
+//	//This method is called again when the user clicks back from teh detail view.
+//	//So the overlay is displayed on the results, which is something we do not want to happen.
+//	if(searching)
+//		return;
+//	
+//	//Add the overlay view.
+//	if(ovController == nil)
+//		ovController = [[OverlayViewController alloc] initWithNibName:@"OverlayView" bundle:[NSBundle mainBundle]];
+//	
+//	CGFloat yaxis = self.navigationController.navigationBar.frame.size.height;
+//	CGFloat width = self.view.frame.size.width;
+//	CGFloat height = self.view.frame.size.height;
+//	
+//	//Parameters x = origion on x-axis, y = origon on y-axis.
+//	CGRect frame = CGRectMake(0, yaxis, width, height);
+//	ovController.view.frame = frame;
+//	ovController.view.backgroundColor = [UIColor grayColor];
+//	ovController.view.alpha = 0.5;
+//	
+//	ovController.rvController = self;
+//	
+//	[self.tableView insertSubview:ovController.view aboveSubview:self.parentViewController.view];
+//	
+//	searching = YES;
+//	letUserSelectRow = NO;
+//	self.tableView.scrollEnabled = NO;
+//	
+//	//Add the done button.
+//	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+//											   initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+//											   target:self action:@selector(doneSearching_Clicked:)];
+//	
+//}
+//
+//- (void)searchBar:(UISearchBar *)theSearchBar textDidChange:(NSString *)searchText {
+//    
+//	//Remove all objects first.
+//	[copyListOfItems removeAllObjects];
+//	
+//	if([searchText length] > 0) {
+//		
+//		[ovController.view removeFromSuperview];
+//		searching = YES;
+//		letUserSelectRow = YES;
+//		self.tableView.scrollEnabled = YES;
+//		[self searchTableView];
+//	}
+//	else {
+//		
+//		[self.tableView insertSubview:ovController.view aboveSubview:self.parentViewController.view];
+//		
+//		searching = NO;
+//		letUserSelectRow = NO;
+//		self.tableView.scrollEnabled = NO;
+//	}
+//	
+//	[self.tableView reloadData];
+//}
+//
+//- (void) searchBarSearchButtonClicked:(UISearchBar *)theSearchBar {
+//	
+//	[self searchTableView];
+//}
+//
+//- (void) searchTableView {
+//	
+//	NSString *searchText = searchTable.text;
+//	NSMutableArray *searchArray = [[NSMutableArray alloc] init];
+//	
+//	for (NSDictionary *dictionary in arrayToMusic)
+//	{
+//		NSArray *array1 = [dictionary objectForKey:@"Countries"];
+//		[searchArray addObjectsFromArray:array1];
+//	}
+//	
+//	for (NSString *sTemp in searchArray)
+//	{
+//		NSRange titleResultsRange = [sTemp rangeOfString:searchText options:NSCaseInsensitiveSearch];
+//		
+//		if (titleResultsRange.length > 0)
+//			[copyListOfItems addObject:sTemp];
+//	}
+//	
+//}
+//
+//- (void) doneSearching_Clicked:(id)sender {
+//	
+//	searchTable.text = @"";
+//	[searchTable resignFirstResponder];
+//	
+//	letUserSelectRow = YES;
+//	searching = NO;
+//	self.navigationItem.rightBarButtonItem = nil;
+//	self.tableView.scrollEnabled = YES;
+//	
+//	[ovController.view removeFromSuperview];
+//	
+//	ovController = nil;
+//	
+//	[self.tableView reloadData];
+//}
+//
+
+
 
 - (void)viewDidUnload {
     viewAssistance = nil;

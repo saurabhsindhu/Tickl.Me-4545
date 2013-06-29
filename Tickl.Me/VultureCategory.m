@@ -90,12 +90,14 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
+    [[tableView cellForRowAtIndexPath:indexPath] setSelected:NO];
+    
     UITableViewCell *cell=[tableView cellForRowAtIndexPath:indexPath];
     if(cell.accessoryType==UITableViewCellAccessoryCheckmark){
-        cell.accessoryType=UITableViewCellAccessoryNone;
+         [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryNone];
     }
     else if(cell.accessoryType==UITableViewCellAccessoryNone){
-        cell.accessoryType=UITableViewCellAccessoryCheckmark;
+         [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
         
         [arr addObject:[uid objectAtIndex:indexPath.row]];
         NSLog(@"Inserted UID%@",arr);

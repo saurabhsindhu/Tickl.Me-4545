@@ -12,6 +12,7 @@
 #import "MapView_ViewController.h"
 #import "AsyncImageView.h"
 #import "JSON.h"
+#import "CheckInView.h"
 
 #define ASYNC_IMAGE_TAG 9999
 
@@ -40,7 +41,6 @@
     NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     destPath = [destPath stringByAppendingPathComponent:@"filter.plist"];
     
-    NSLog(@"tft%@",destPath);
     
     
     NSDictionary *dictValue = [[NSDictionary alloc]
@@ -48,11 +48,7 @@
     
     NSString *strVal = [dictValue objectForKey:@"Filter"];
     
-    //NSLog(@"JSON String 1%@",strVal);
-    
-    
-    // path for bool Val
-    
+      
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"Eswitch.plist"];
@@ -100,6 +96,7 @@
     
     if (myBool==NO){
         
+        //http://108.168.203.226:8123/events/get_list_events
         
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://108.168.203.226:8123/events/get_list_events"]];
         
@@ -232,7 +229,7 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    TakePicEventPlaceViewController *takeImage=[[TakePicEventPlaceViewController alloc]init];
+    CheckInView *takeImage=[[CheckInView alloc]init];
     [[self navigationController]pushViewController:takeImage animated:YES];
     
 }

@@ -27,9 +27,20 @@
     NSMutableArray *description;
     NSMutableArray *thumImages;
     
+    NSMutableArray *time;
+    NSMutableArray *venue;
+    NSMutableArray *price;
+    NSMutableArray *desc;
+    NSMutableArray *address;
+    NSMutableArray *city;
+    NSMutableArray *state,*zip,*phone;
+    NSMutableArray *udid;
+    NSMutableArray *endtime;
+    
     AsyncImageView *asyncImageView;
     
     NSString *strVal;
+    
     
 }
 

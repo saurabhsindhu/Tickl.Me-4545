@@ -318,14 +318,6 @@ dCB3b3JyeSwgeW91IGNhbiBhbHdheXMKY29tZSBiYWNrIGFuZCBhZGQgbW9yZSBsYXRlci4</string>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">tableView</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="218648856"/>
-					</object>
-					<int key="connectionID">104</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">tableListView</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="218648856"/>
@@ -355,6 +347,14 @@ dCB3b3JyeSwgeW91IGNhbiBhbHdheXMKY29tZSBiYWNrIGFuZCBhZGQgbW9yZSBsYXRlci4</string>
 						<reference key="destination" ref="128815681"/>
 					</object>
 					<int key="connectionID">353</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">searchTable</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="394208674"/>
+					</object>
+					<int key="connectionID">356</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -387,7 +387,7 @@ dCB3b3JyeSwgeW91IGNhbiBhbHdheXMKY29tZSBiYWNrIGFuZCBhZGQgbW9yZSBsYXRlci4</string>
 						<reference key="source" ref="394208674"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
-					<int key="connectionID">257</int>
+					<int key="connectionID">355</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -456,11 +456,6 @@ dCB3b3JyeSwgeW91IGNhbiBhbHdheXMKY29tZSBiYWNrIGFuZCBhZGQgbW9yZSBsYXRlci4</string>
 						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">219</int>
-						<reference key="object" ref="394208674"/>
-						<reference key="parent" ref="191373211"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">335</int>
 						<reference key="object" ref="10358244"/>
 						<reference key="parent" ref="191373211"/>
@@ -487,23 +482,28 @@ dCB3b3JyeSwgeW91IGNhbiBhbHdheXMKY29tZSBiYWNrIGFuZCBhZGQgbW9yZSBsYXRlci4</string>
 						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">32</int>
-						<reference key="object" ref="142656526"/>
-						<reference key="parent" ref="1024183933"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">45</int>
 						<reference key="object" ref="371197576"/>
 						<reference key="parent" ref="1024183933"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">33</int>
-						<reference key="object" ref="1022418010"/>
-						<reference key="parent" ref="1024183933"/>
+						<int key="objectID">219</int>
+						<reference key="object" ref="394208674"/>
+						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">34</int>
 						<reference key="object" ref="398692332"/>
+						<reference key="parent" ref="1024183933"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">32</int>
+						<reference key="object" ref="142656526"/>
+						<reference key="parent" ref="1024183933"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">33</int>
+						<reference key="object" ref="1022418010"/>
 						<reference key="parent" ref="1024183933"/>
 					</object>
 				</array>
@@ -530,7 +530,7 @@ dCB3b3JyeSwgeW91IGNhbiBhbHdheXMKY29tZSBiYWNrIGFuZCBhZGQgbW9yZSBsYXRlci4</string>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">353</int>
+			<int key="maxID">356</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes"/>
 		<int key="IBDocument.localizationMode">0</int>

@@ -89,6 +89,13 @@
     NSDictionary *responseDict = (NSDictionary *)[string JSONValue];
     
     NSLog(@"%@",responseDict);
+    
+    NSDictionary *dictionary = [string JSONValue];
+    
+    NSString *myid = [dictionary objectForKey:@"user_id"];
+    
+	NSLog(@"My id is: \"%@\"", myid);
+
 
     
     NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
@@ -102,14 +109,17 @@
         [fileManager copyItemAtPath:sourcePath toPath:destPath error:nil];
     }
     
+    
+    
+    
     NSMutableDictionary *dict = [[NSMutableDictionary alloc]init];
     
-    [dict setObject:self.username_txtField.text forKey:@"userName"];
+    [dict setObject:myid forKey:@"userName"];
     
     [dict writeToFile:destPath atomically:YES];
-
     
-    
+       
+       
     
 //    UIAlertView *fail = [[UIAlertView alloc] initWithTitle:@"Login Failed" message:@"Please double check your username and password. If you're having trouble, tap the Forgot Password link." delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
 //    [fail show];

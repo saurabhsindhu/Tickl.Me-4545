@@ -11,6 +11,7 @@
 #import "DataMyEvent.h"
 #import "AddEventViewController.h"
 #import "FriendRequestAndEvetnInVitaiaionViewController.h"
+#import "EventsDetailView.h"
 @interface MyEvents_ViewController ()
 
 @end
@@ -124,8 +125,11 @@
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    FriendRequestAndEvetnInVitaiaionViewController*friendRequest=[[FriendRequestAndEvetnInVitaiaionViewController alloc]initWithNibName:@"FriendRequestAndEvetnInVitaiaionViewController" bundle:nil];
-        [self.navigationController pushViewController:friendRequest animated:YES];
+    
+    EventsDetailView *objFriendList = [[EventsDetailView alloc] initWithNibName:@"EventsDetailView" bundle:nil];
+    [self.navigationController  pushViewController:objFriendList animated:YES];
+//    FriendRequestAndEvetnInVitaiaionViewController*friendRequest=[[FriendRequestAndEvetnInVitaiaionViewController alloc]initWithNibName:@"FriendRequestAndEvetnInVitaiaionViewController" bundle:nil];
+//        [self.navigationController pushViewController:friendRequest animated:YES];
     
  }
 

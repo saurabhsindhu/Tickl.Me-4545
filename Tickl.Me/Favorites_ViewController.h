@@ -11,8 +11,9 @@
 #import "dataTeams.h"
 #import "FacebookManager.h"
 #import "ASIHTTPRequest.h"
+#import "OverlayViewController.h"
 
-@interface Favorites_ViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate,ASIHTTPRequestDelegate>
+@interface Favorites_ViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate,ASIHTTPRequestDelegate,UISearchDisplayDelegate>
 {
     NSMutableArray *suffixArray;
     IBOutlet UITableView *tableListView;
@@ -24,6 +25,12 @@
     dataTeams *objTeams;
     IBOutlet UIButton *btnSkip;
     
+    IBOutlet UISearchBar *searchTable;
+    
+    NSMutableArray *searchData;
+    
+    UISearchDisplayController *searchDisplayController;
+    
     NSArray *array;
     
     NSArray *searchResults;
@@ -33,15 +40,27 @@
     NSMutableArray *arrayToMusic,*arrayToSports,*musicID,*sportsID;
     
     IBOutlet UIView *viewAssistance;
+    
+    //search
+    
+    NSMutableArray *copyListOfItems;
+    BOOL searching;
+	BOOL letUserSelectRow;
+	
+	OverlayViewController *ovController;
+    
 }
 - (IBAction)topSegmentControllClicked:(UISegmentedControl*)sender;
 
 @property (retain, nonatomic) IBOutlet UIView *welcomeView;
 @property (retain, nonatomic) IBOutlet UITableView *tableView;
+
+
 - (void)clickBack:(id)sender;
 - (void)clickNext:(id)sender;
 - (IBAction)clickSkip:(id)sender;
 - (IBAction)clickOK:(id)sender;
 - (IBAction)btnEditToolbarClicked:(UIButton *)sender;
+- (void) doneSearching_Clicked:(id)sender;
 
 @end

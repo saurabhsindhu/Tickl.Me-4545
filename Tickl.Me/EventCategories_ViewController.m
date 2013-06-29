@@ -456,7 +456,7 @@
    NSLog(@"requestFinished%@",request);
   
     NSString *responseString=[[request responseString]stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    NSLog(@"%@",[responseString JSONValue]);
+    //NSLog(@"%@",[responseString JSONValue]);
     
 }
 

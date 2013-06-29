@@ -40,6 +40,7 @@
     NSString *strVal,*endVal;
     
     
+    
 }
 
 - (void)searchNewEvents:(UIButton *)sender;

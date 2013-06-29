@@ -87,7 +87,7 @@
     
     //***************************************************************//
     
-    NSLog(@"VALUEEE%@",parArr);
+   // NSLog(@"VALUEEE%@",parArr);
     
     for (i = 0; i < [parArr count]; i++) {
         
@@ -98,7 +98,7 @@
             [insertVal addObject:[arrayToEvents objectAtIndex:i]];
             [insertUID addObject:[uid objectAtIndex:i]];
             
-            NSLog(@"%@%@",self.strMainCategoryName, insertVal);
+          //  NSLog(@"%@%@",self.strMainCategoryName, insertVal);
             
 
         }
@@ -108,7 +108,7 @@
     }
     
     
-    NSLog(@"XYZ%@",insertVal);
+   // NSLog(@"XYZ%@",insertVal);
     
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -135,17 +135,18 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+     [[tableView cellForRowAtIndexPath:indexPath] setSelected:NO];
     
     UITableViewCell *cell=[tableView cellForRowAtIndexPath:indexPath];
     if(cell.accessoryType==UITableViewCellAccessoryCheckmark){
-        cell.accessoryType=UITableViewCellAccessoryNone;
+         [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryNone];
     }
     else if(cell.accessoryType==UITableViewCellAccessoryNone){
-        cell.accessoryType=UITableViewCellAccessoryCheckmark;
+         [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
         
         
         [arr addObject:[insertUID objectAtIndex:indexPath.row]];
-        NSLog(@"Inserted UID%@",arr);
+       // NSLog(@"Inserted UID%@",arr);
         
         //Saving it
         [[NSUserDefaults standardUserDefaults] setObject:arr forKey:@"id"];
@@ -202,16 +203,16 @@
 #pragma mark ASIHTTPReq Delegate
 - (void)requestStarted:(ASIHTTPRequest *)request{
     
-    NSLog(@"requestStarted%@",request);
+   // NSLog(@"requestStarted%@",request);
     
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
     
-    NSLog(@"requestFinished%@",request);
+   // NSLog(@"requestFinished%@",request);
     
     NSString *responseString=[[request responseString]stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    NSLog(@"Response %@",responseString);
+   // NSLog(@"Response %@",responseString);
     
     NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     destPath = [destPath stringByAppendingPathComponent:@"filter.plist"];

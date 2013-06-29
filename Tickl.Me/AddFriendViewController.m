@@ -8,6 +8,26 @@
 
 #import "AddFriendViewController.h"
 #import "RequsetsViewController.h"
+#import "Tweet.h"
+#import "TwitterConnection.h"
+#define IMAGE_PREVIEW_TAG 11
+#define NAME_LABEL_TAG 10
+
+
+#define TWITTER_FOLLOWINGS_URL @"https://api.twitter.com/1/following.json"
+#define TWITTER_NEAR_FEED_URL @"https://api.twitter.com/1.1/search/tweets.json"
+#define TWITTER_FRIENDS_URL @"https://api.twitter.com/1.1/friends/list.json"
+
+#define ERROR_LOCATION_FAILED @"Failed to get you current location"
+#define ERROR_NO_DATA @"Could not retrieve your data.. try later"
+#define ERROR_TWITTER_ACCESS @"In order to use Twitter functionality, please add your Twitter account in Settings."
+#define ERROR_TWITTER_LIMIT @"Twitter rate limit... =^("
+#define ERROR_PARSING @"Json error"
+#define ERROR_SERVER @"Server error %i... please try later =^("
+
+#define MESSAGE_TWEET @"Hey twitto! check this funny image of you haha =^]"
+
+
 
 @interface AddFriendViewController ()
 {
@@ -20,6 +40,7 @@
 @implementation AddFriendViewController
 
 @synthesize myAccount,paramString,resultFollowersNameList;
+@synthesize facebook,reqFriendList;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -30,26 +51,54 @@
     return self;
 }
 
+- (id)initWithFacebook:(Facebook*)fb
+{
+    self = [super init];
+    if (self) {
+        self.facebook = fb;
+    }
+    return self;
+}
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
     self.title=@"Add Friends";
     
-    //showListingUsers=@"Email";
+    showListingUsers=@"Twitter";
     arrFriendList=[[NSMutableArray alloc]init];
+    arrFacebookFriend=[[NSMutableArray alloc]init];
     
-    
+    tweets = [[NSMutableArray alloc]init];
+    fndname = [[NSMutableArray alloc]init];
     
     
     
 }
--(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    cell.backgroundColor=[UIColor whiteColor];
-}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if([showListingUsers isEqualToString:@"Twitter"]){
+        
+        return tweets.count;
+        
+    }
+    
+    if([showListingUsers isEqualToString:@"Email"]){
+        
+        return arrFriendList.count;
+        
+    }
+    
+    if([showListingUsers isEqualToString:@"Facebook"]){
+        
+        return arrFacebookFriend.count;
+        
+    }
+
+
     return arrFriendList.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -73,7 +122,7 @@
         if([showListingUsers isEqualToString:@"Facebook"])
         {
             FBFriend *friend=[[FBFriend alloc]init];
-            friend=(FBFriend*)[arrFriendList objectAtIndex:indexPath.row];
+            friend=(FBFriend*)[arrFacebookFriend objectAtIndex:indexPath.row];
             
             NSURL *url = [NSURL URLWithString:friend.fbPicture];
             NSData *data = [NSData dataWithContentsOfURL:url];
@@ -93,84 +142,223 @@
         }
         else if ([showListingUsers isEqualToString:@"Twitter"])
         {
-            //            NSURL *url = [NSURL URLWithString:friend.fbPicture];
-            //            NSData *data = [NSData dataWithContentsOfURL:url];
-            //            UIImage *image = [UIImage imageWithData:data];
-            //            UIImage *image=[UIImage imageNamed:@"UserImage.png"];
-            //            imgFriend.image=image;
-            //            [cell addSubview:imgFriend];
-            //
-            //            lblFriendName.backgroundColor=[UIColor clearColor];
-            //            lblFriendName.text=[NSString stringWithFormat:@"Twitter friend name"];
-            //            lblFriendName.font=[UIFont boldSystemFontOfSize:14];
-            //            [cell addSubview:lblFriendName];
-            //
-            //            btnAddFriend.frame=CGRectMake(270, 5, 25, 25);
-            //            [btnAddFriend setImage:[UIImage imageNamed:@"imgAddFriend.png"] forState:UIControlStateNormal];
-            //            [btnAddFriend addTarget:self action:@selector(sendInvitaionFormApp) forControlEvents:UIControlEventTouchUpInside];
-            //            [cell addSubview:btnAddFriend];
+            UIImageView *imgEvent=[[UIImageView alloc]initWithFrame:CGRectMake(2, 0, 43, 43)];
+            
+            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:[tweets objectAtIndex:indexPath.row]]];
+            
+            UIImage *img = [UIImage imageWithData:data];
+            
+            imgEvent.image=img;
             
             
-            NSDictionary *dict=(NSDictionary*)[arrFriendList objectAtIndex:indexPath.row];
+             NSLog(@"%@",imgEvent.image);
             
-            UIImage *image=[UIImage imageWithData:[dict valueForKey:@"userImage"]];
-            imgFriend.image=image;
-            [cell addSubview:imgFriend];
+            [cell.contentView addSubview:imgEvent];
             
-            lblFriendName.backgroundColor=[UIColor clearColor];
-            lblFriendName.text=[NSString stringWithFormat:@"%@ %@",[dict valueForKey:@"firstName"],[dict valueForKey:@"lastName"]];
-            lblFriendName.font=[UIFont boldSystemFontOfSize:14];
-            [cell addSubview:lblFriendName];
-            
-            UILabel *lblFriendEmailID=[[UILabel alloc]initWithFrame:CGRectMake(60, 30, 240, 35)];
-            lblFriendEmailID.backgroundColor=[UIColor clearColor];
-            lblFriendEmailID.text=[NSString stringWithFormat:@"%@",[dict valueForKey:@"emailID"]];
-            lblFriendEmailID.font=[UIFont boldSystemFontOfSize:14];
-            [cell addSubview:lblFriendEmailID];
-            
-            btnAddFriend.frame=CGRectMake(270, 5, 25, 25);
-            [btnAddFriend setImage:[UIImage imageNamed:@"imgAddFriend.png"] forState:UIControlStateNormal];
-            [btnAddFriend addTarget:self action:@selector(sendInvitaionFormApp:) forControlEvents:UIControlEventTouchUpInside];
-            [cell addSubview:btnAddFriend];
-            
+            UILabel *NameLabel=[[UILabel alloc]initWithFrame:CGRectMake(80, 10, 200, 30)];
+            [NameLabel setTextColor:[UIColor blackColor]];
+            [NameLabel setTextAlignment:NSTextAlignmentLeft];
+            [NameLabel setFont:[UIFont systemFontOfSize:11.0f]];
+            [NameLabel setText:[fndname objectAtIndex:indexPath.row]];
+            [cell addSubview:NameLabel];
+
             
         }
         else if ([showListingUsers isEqualToString:@"Email"])
         {
             
-            mailView.hidden = NO;
-            scan.hidden = NO;
-            scanInfo.hidden =   NO;
-            info.hidden = NO;
+//            mailView.hidden = NO;
+//            scan.hidden = NO;
+//            scanInfo.hidden =   NO;
+//            info.hidden = NO;
             
             //    firstName,@"firstName",lastName,@"lastName",phonenumber,@"phonenumber",emailID,@"emailID",useImage,@"userImage",nil];
-            //            NSDictionary *dict=(NSDictionary*)[arrFriendList objectAtIndex:indexPath.row];
-            //
-            //            UIImage *image=[UIImage imageWithData:[dict valueForKey:@"userImage"]];
-            //            imgFriend.image=image;
-            //            [cell addSubview:imgFriend];
-            //
-            //            lblFriendName.backgroundColor=[UIColor clearColor];
-            //            lblFriendName.text=[NSString stringWithFormat:@"%@ %@",[dict valueForKey:@"firstName"],[dict valueForKey:@"lastName"]];
-            //            lblFriendName.font=[UIFont boldSystemFontOfSize:14];
-            //            [cell addSubview:lblFriendName];
-            //
-            //            UILabel *lblFriendEmailID=[[UILabel alloc]initWithFrame:CGRectMake(60, 30, 240, 35)];
-            //            lblFriendEmailID.backgroundColor=[UIColor clearColor];
-            //            lblFriendEmailID.text=[NSString stringWithFormat:@"%@",[dict valueForKey:@"emailID"]];
-            //            lblFriendEmailID.font=[UIFont boldSystemFontOfSize:14];
-            //            [cell addSubview:lblFriendEmailID];
-            //
-            //            btnAddFriend.frame=CGRectMake(270, 5, 25, 25);
-            //            [btnAddFriend setImage:[UIImage imageNamed:@"imgAddFriend.png"] forState:UIControlStateNormal];
-            //            [btnAddFriend addTarget:self action:@selector(sendInvitaionFormApp) forControlEvents:UIControlEventTouchUpInside];
-            //            [cell addSubview:btnAddFriend];
+                        NSDictionary *dict=(NSDictionary*)[arrFriendList objectAtIndex:indexPath.row];
+            
+                        UIImage *image=[UIImage imageWithData:[dict valueForKey:@"userImage"]];
+                        imgFriend.image=image;
+                        [cell addSubview:imgFriend];
+            
+                        lblFriendName.backgroundColor=[UIColor clearColor];
+                        lblFriendName.text=[NSString stringWithFormat:@"%@ %@",[dict valueForKey:@"firstName"],[dict valueForKey:@"lastName"]];
+                        lblFriendName.font=[UIFont boldSystemFontOfSize:14];
+                        [cell addSubview:lblFriendName];
+            
+                        UILabel *lblFriendEmailID=[[UILabel alloc]initWithFrame:CGRectMake(60, 30, 240, 35)];
+                        lblFriendEmailID.backgroundColor=[UIColor clearColor];
+                        lblFriendEmailID.text=[NSString stringWithFormat:@"%@",[dict valueForKey:@"emailID"]];
+                        lblFriendEmailID.font=[UIFont boldSystemFontOfSize:14];
+                        [cell addSubview:lblFriendEmailID];
+            
+                        btnAddFriend.frame=CGRectMake(270, 5, 25, 25);
+                        [btnAddFriend setImage:[UIImage imageNamed:@"imgAddFriend.png"] forState:UIControlStateNormal];
+                        //[btnAddFriend addTarget:self action:@selector(sendInvitaionFormApp) forControlEvents:UIControlEventTouchUpInside];
+                        [cell addSubview:btnAddFriend];
             
         }
     }
     
     return cell;
 }
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    if (indexPath.section == 0 && currentMaxDisplayedCell == 0){
+        currentMaxDisplayedCell = -1;
+    }
+    
+    if (indexPath.row > currentMaxDisplayedCell){
+        
+        cell.contentView.alpha = 0.7;
+        
+        CGAffineTransform transformScale = CGAffineTransformMakeScale(0.9, 0.9);
+        
+        cell.contentView.transform = transformScale;
+        
+        [tblAddFriend bringSubviewToFront:cell.contentView];
+        [UIView animateWithDuration:0.5 animations:^{
+            cell.contentView.alpha = 1;
+            //clear the transform
+            cell.contentView.transform = CGAffineTransformIdentity;
+        } completion:nil];
+        
+    }
+    currentMaxDisplayedCell = indexPath.row;
+}
+
+#pragma mark - Facebook server calls
+
+-(void) getFriendsList{
+    NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"name,id,picture,installed", @"fields", nil];
+    @autoreleasepool {
+        self.reqFriendList = [facebook requestWithGraphPath:@"me/friends" andParams:params andDelegate:self];
+        //[facebook_ requestWithGraphPath:@"me/friends" andDelegate: self ];
+    }
+}
+
+
+#pragma mark - Twitter server calls
+
+- (void)loadProfilePictures
+{
+    for (int i = 0; i < tweets.count; i++)
+    {
+        Tweet *tweet = [tweets objectAtIndex:i];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:tweet.bigImageUrl]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                tweet.image = [UIImage imageWithData:data];
+                
+                NSArray *array = [NSArray arrayWithObject:[NSIndexPath indexPathForRow:i inSection:0]];
+                [tblAddFriend reloadRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationNone];
+            });
+        });
+    }
+}
+
+- (void)tweetRetrieved:(id)response
+{
+    if( [response isKindOfClass:[NSString class]] )
+    {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Sorry"
+                                                            message:response
+                                                           delegate:self
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil];
+        [alertView show];
+        [tblAddFriend reloadData];
+        //[self loadProfilePictures];
+        [self dismissLoadingAlertView];
+        dataLoading = NO;
+        return;
+    }
+    
+    NSArray *jsonusers = [response objectForKey:@"users"];
+    NSString *nextCursor = [response objectForKey:@"next_cursor_str"];
+    
+    for (NSDictionary *jsonTweet in jsonusers)
+    {
+        NSString *name = [jsonTweet objectForKey:@"name"];
+        NSString *user = [jsonTweet objectForKey:@"screen_name"];
+        NSString *text = @"";
+        
+        NSString *imageUrl = [jsonTweet objectForKey:@"profile_image_url"];
+        UIImage *profilePic = nil;
+        CLLocationCoordinate2D coordinate;
+        coordinate.latitude = 0;
+        coordinate.longitude = 0;
+        
+        [tweets addObject:imageUrl];
+        [fndname addObject:name];
+        
+        
+        Tweet *tweet = [[Tweet alloc] initWithUser:user name:name text:text coordinate:coordinate image:profilePic imageURL:imageUrl];
+        
+        //[imagPic addObject:imageUrl];
+        //[tweets addObject:tweet];
+    }
+    
+    // If there's any other page, reload tableview data and download the profile pictures, otherwise make a new call
+    if ([nextCursor isEqualToString:@"0"]) {
+        [tblAddFriend reloadData];
+        // [self loadProfilePictures];
+        [self dismissLoadingAlertView];
+        dataLoading = NO;
+    }
+    else {
+        [self tweeterConnectionWithCursor:nextCursor];
+    }
+}
+
+- (void)tweeterConnectionWithCursor:(NSString *)cursor
+{
+    NSDictionary *params = @{@"cursor" : cursor,
+    @"skip_status" : @"true",
+    @"include_user_entities" : @"true"};
+    
+    // NOTE: Im not using here twiter API 1.1, but 1, because of their crazy rate limit policy.. If you want to use API 1.1 please use TWITTER_FRIENDS_URL constant
+    [TwitterConnection twitterConnectionWithApiUrl:TWITTER_FOLLOWINGS_URL params:params target:self selector:@selector(tweetRetrieved:)];
+}
+
+- (void)retriveCurrentTwitterAccount
+{
+    dataLoading = YES;
+    tweets = [NSMutableArray new];
+    [self tweeterConnectionWithCursor:@"-1"];
+    [self showLoadingAlert];
+}
+
+
+- (void)refreshDataIfNecessary
+{
+    if ((tweets == nil || tweets.count == 0) && !dataLoading)
+    {
+        [self retriveCurrentTwitterAccount];
+    }
+}
+
+- (void)showLoadingAlert
+{
+    loadingAlertView = [[UIAlertView alloc] initWithTitle:@"Loading" message:@"Please wait"
+                                                 delegate:self
+                                        cancelButtonTitle:nil
+                                        otherButtonTitles:nil];
+    
+    UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    spinner.frame = CGRectMake(125, 75, 36, 36);
+    [loadingAlertView addSubview:spinner];
+    [spinner startAnimating];
+    [loadingAlertView show];
+}
+
+- (void)dismissLoadingAlertView
+{
+    [loadingAlertView dismissWithClickedButtonIndex:0 animated:YES];
+    loadingAlertView = nil;
+}
+
+
 
 
 //commented init due to crash!
@@ -208,34 +396,6 @@
     
 }
 
-- (void)request:(FBRequest *)request didLoadRawResponse:(NSData *)data {
-}
-
-- (void)request:(FBRequest *)request didReceiveResponse:(NSURLResponse *)response{
-    
-}
-
-#pragma mark Fb Delegate
-
-- (void) facebookLoginFailed{
-    
-    
-}
-
-- (void) facebookLoginSucceeded{
-    
-    
-}
-
-- (void)requestLoading:(FBRequest *)request{
-    
-}
-- (void) friendsListLoaded:(NSMutableArray*) array
-{
-    arrFriendList=array;
-    
-    [tblAddFriend reloadData];
-}
 
 #pragma mark Twitter Methods
 
@@ -361,22 +521,31 @@
     
 }
 
+-(void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:YES];
+    
+    [self refreshDataIfNecessary];
+}
+
+
+
+
 - (IBAction)btnSegentEmailCliceked:(UISegmentedControl *)sender {
     if(sender.selectedSegmentIndex==0){
         
-        [mailView setHidden:YES];
+                
+        showListingUsers=@"Twitter";
         
-        showListingUsers=@"Twiter";
+        [self refreshDataIfNecessary];
         
-        
-        [self getTwitterFriendsIDListForThisAccount];
+         [tblAddFriend reloadData];
         
         
     }
     else if (sender.selectedSegmentIndex==1)
     {
-        [mailView setHidden:YES];
-        
+                
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         
         
@@ -405,6 +574,8 @@
             [myFacebook1 getFriends];
             showListingUsers=@"Facebook";
         }
+        
+         [tblAddFriend reloadData];
     }
     else  if(sender.selectedSegmentIndex==2)
     {

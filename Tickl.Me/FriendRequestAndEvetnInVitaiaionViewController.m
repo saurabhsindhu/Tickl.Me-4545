@@ -7,6 +7,8 @@
 //
 
 #import "FriendRequestAndEvetnInVitaiaionViewController.h"
+
+
 #import "dataFriendRequests.h"
 #import "dataEventsInvitaions.h"
 #import <QuartzCore/QuartzCore.h>
@@ -45,6 +47,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
+    
+      
     
     if (IS_IPHONE_5) {
         tableFriendRequests.frame=CGRectMake(0, 35, 320, 173);
