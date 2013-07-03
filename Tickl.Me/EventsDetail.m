@@ -17,6 +17,7 @@
 @implementation EventsDetail
 @synthesize eventsDescription;
 @synthesize xX,yY;
+@synthesize desc;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -46,9 +47,14 @@
     UILabel *lblEventSubDetails = [[UILabel alloc]initWithFrame :CGRectMake(25, 215, 280, 65)];
     lblEventSubDetails.font = [UIFont boldSystemFontOfSize:13];
     lblEventSubDetails.textColor =[UIColor colorWithRed:100/255.0 green:100/255.0 blue:100/255.0 alpha:1.0f];
-    lblEventSubDetails.tag =11;
+    lblEventSubDetails.tag =19;
+    lblEventSubDetails.lineBreakMode = NSLineBreakByWordWrapping;
+    lblEventSubDetails.numberOfLines = 0;
     lblEventSubDetails.backgroundColor = [UIColor whiteColor];
+    lblEventSubDetails.text = desc;
     [self.view addSubview:lblEventSubDetails];
+    
+   
     
     // Label for Venue Detail
     UILabel *lblDet = [[UILabel alloc]initWithFrame :CGRectMake(25, 285, 280, 12)];

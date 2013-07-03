@@ -156,7 +156,7 @@
     
     UITableViewCell *cell =[self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc]init];
         
         lblEventName = [[UILabel alloc]initWithFrame :CGRectMake(70, 15, 195, 25)];
         lblEventName.font = [UIFont boldSystemFontOfSize:11];
@@ -411,19 +411,19 @@
         
         
         
-        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-        [dict setObject:array forKey:@"id"];
-        
-        NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"http://108.168.203.226:8123/events/get_cat_data"]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-               
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:url];
-        NSDictionary* postDict = [NSDictionary dictionaryWithObjectsAndKeys:array,@"id",nil];
-        NSString* jsonData = [postDict JSONRepresentation];
-        NSData* postData = [jsonData dataUsingEncoding:NSUTF8StringEncoding];
-        [request appendPostData:postData];
-        [request setDelegate:self];
-        [request startAsynchronous];
-
+//        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+//        [dict setObject:array forKey:@"id"];
+//        
+//        NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"http://108.168.203.226:8123/events/get_cat_data"]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+//               
+//        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:url];
+//        NSDictionary* postDict = [NSDictionary dictionaryWithObjectsAndKeys:array,@"id",nil];
+//        NSString* jsonData = [postDict JSONRepresentation];
+//        NSData* postData = [jsonData dataUsingEncoding:NSUTF8StringEncoding];
+//        [request appendPostData:postData];
+//        [request setDelegate:self];
+//        [request startAsynchronous];
+//
 
 
         switchOn=YES;

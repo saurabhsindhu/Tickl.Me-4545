@@ -56,8 +56,6 @@
     imgScroll.layer.borderWidth=1.0;
     imgScroll.layer.borderColor=[UIColor whiteColor].CGColor;
     
-    
-
 }
 -(void)ShareOption:(id)sender;
 {

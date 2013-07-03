@@ -13,6 +13,8 @@
 #import "JSON.h"
 #import <EventKit/EventKit.h>
 #import "EKEvent+Utilities.h"
+#import "AddFriendViewController.h"
+#import "CheckInView.h"
 
 
 @interface SearchDetail ()
@@ -264,7 +266,19 @@ int Xcoord,Ycoord;
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
     
     
-    if (buttonIndex==0) {
+
+    if (buttonIndex==0 && getit==YES){
+        
+        NSLog(@"Hi");
+        
+        CheckInView *check = [[CheckInView alloc]init];
+        
+         [[self navigationController]pushViewController:check animated:YES];
+    }
+    
+    if (buttonIndex==0 && getit==NO) {
+        
+    
         
         self.eventStore = [[EKEventStore alloc] init];
         
@@ -327,7 +341,6 @@ int Xcoord,Ycoord;
             [request startAsynchronous];
             
          
-            
         }
         
         else if (user_id != nil){
@@ -346,9 +359,30 @@ int Xcoord,Ycoord;
             [request startAsynchronous];
             
         }
-
-       
         
+        
+//        EKEventEditViewController *addController = [[EKEventEditViewController alloc] initWithNibName:nil bundle:nil];
+//        
+//        NSLog(@"%@",self.eventStore);
+//    
+//        
+//        // set the addController's event store to the current event store.
+//        addController.eventStore = self.eventStore;
+//        
+//        // present EventsAddViewController as a modal view controller
+//        [self presentViewController:addController animated:YES completion:nil];
+//
+//       
+      
+        
+    }
+    
+    if (buttonIndex==1) {
+        
+        AddFriendViewController *addFrnd = [[AddFriendViewController alloc]init];
+        
+        
+         [[self navigationController]pushViewController:addFrnd animated:YES];
         
     }
     
@@ -496,9 +530,11 @@ int Xcoord,Ycoord;
         // This line asks user's permission to access his calendar
         [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error)
          {
+             if (granted)
+             {
                 EKEvent *event = [EKEvent eventWithEventStore:eventStore];
                  event.title  = venue_name;
-                 NSLog(@"%@",venue_name);
+                 NSLog(@"Name%@",venue_name);
                  event.location = address;
                  event.notes = description;
                 
@@ -517,19 +553,19 @@ int Xcoord,Ycoord;
              
                 //alarm concept here...
              
-                [event addAlarm:[EKAlarm alarmWithAbsoluteDate:[[NSDate date] dateByAddingTimeInterval:-1800]]];
-             
-                [event setCalendar:[eventStore defaultCalendarForNewEvents]];
-             
-                 NSMutableArray *myAlarmsArray = [[NSMutableArray alloc] init];
-             
-                 EKAlarm *alarm1 = [EKAlarm alarmWithRelativeOffset:-3600]; // 1 Hour
-                 EKAlarm *alarm2 = [EKAlarm alarmWithRelativeOffset:-86400]; // 1 Day
-             
-                 [myAlarmsArray addObject:alarm1];
-                 [myAlarmsArray addObject:alarm2];
-             
-             event.alarms = myAlarmsArray;
+//                [event addAlarm:[EKAlarm alarmWithAbsoluteDate:[[NSDate date] dateByAddingTimeInterval:-1800]]];
+//             
+//                [event setCalendar:[eventStore defaultCalendarForNewEvents]];
+//             
+//                 NSMutableArray *myAlarmsArray = [[NSMutableArray alloc] init];
+//             
+//                 EKAlarm *alarm1 = [EKAlarm alarmWithRelativeOffset:-3600]; // 1 Hour
+//                 EKAlarm *alarm2 = [EKAlarm alarmWithRelativeOffset:-86400]; // 1 Day
+//             
+//                 [myAlarmsArray addObject:alarm1];
+//                 [myAlarmsArray addObject:alarm2];
+//             
+//             event.alarms = myAlarmsArray;
              
              NSError *error1 = nil;
              
@@ -545,7 +581,7 @@ int Xcoord,Ycoord;
             if(err)
                      NSLog(@"unable to save event to the calendar!: Error= %@", err);
                  
-             
+             }
              else // if he does not allow
              {
                  [[[UIAlertView alloc]initWithTitle:nil message:@"not!" delegate:nil cancelButtonTitle:NSLocalizedString(@"plzAlowCalendar", nil)  otherButtonTitles: nil] show];
@@ -612,30 +648,61 @@ int Xcoord,Ycoord;
 -(void)clickMenu{
     
     
-    NSInteger minutes = 5*60;//5hrs
+    NSInteger minutes = 4*60;//5hrs
+    NSDate *date = [NSDate date];
+    NSLog(@"Current Time: %@", date);//Current Time: 2013-07-02 06:33:25 +0000
+    
+    
+    
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     // this is imporant - we set our input date format to match our input string
     // if format doesn't match you'll get nil from your string, so be careful
-    [dateFormatter setDateFormat:@"dd-MM-yyyy HH:mm:SS"];
-
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
     
-    NSDate *startDate = [[NSDate alloc] init];
-    // voila!
-    startDate = [dateFormatter dateFromString:start_time];
+    NSString *dateString = [dateFormatter stringFromDate:date];
+    
+    NSLog(@"%@",dateString);
+    
+    NSDate *futureDate = [date dateByAddingTimeInterval:minutes*60];
+    
+    NSString *futString = [dateFormatter stringFromDate:futureDate];
+    
+    NSLog(@"%@",futString);
     
     NSLog(@"%@",start_time);
-
     
-    NSDate *futureDate = [startDate dateByAddingTimeInterval:minutes*60];
+    NSArray *subString = [start_time componentsSeparatedByString:@" "];
+    NSInteger firstVal =  [[subString objectAtIndex:1]integerValue];
+    NSString *secondVal = [subString objectAtIndex:0];
     
     
-    NSLog(@"%@",futureDate);
-  
-
+    NSLog(@"S%dSV%@",firstVal,secondVal);
+    
+    NSArray *subString1 = [futString componentsSeparatedByString:@" "];
+    NSInteger firstVal1 =  [[subString1 objectAtIndex:1]integerValue];
+    NSString *secondVal1 = [subString1 objectAtIndex:0];
+    
+    NSLog(@"Se%ddSVa%@",firstVal1,secondVal1);
+    
+    if ( [secondVal isEqualToString:secondVal1] && firstVal1 > firstVal) {
+        
+        UIActionSheet *action = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Check In", @"Invite A Friend",@"Get Directions",@"Add as Favorite",nil];
+        [action showInView:self.view];
+        
+        getit=YES;
+        
+    }
+    
+    else {
+    
+    
     UIActionSheet *action = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Add To Calender", @"Invite A Friend",@"Get Directions",@"Add as Favorite",nil];
     [action showInView:self.view];
-    
+        
+    getit=NO;
+        
+    }
     
 }
 

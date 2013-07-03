@@ -12,6 +12,12 @@
 #import "AddEventViewController.h"
 #import "FriendRequestAndEvetnInVitaiaionViewController.h"
 #import "EventsDetailView.h"
+#import "JSON.h"
+
+#import "ASIHTTPRequest.h"
+#import "ASIFormDataRequest.h"
+#define ASYNC_IMAGE_TAG 9999
+
 @interface MyEvents_ViewController ()
 
 @end
@@ -28,7 +34,18 @@
 }
 -(void)viewWillAppear:(BOOL)animated
 {
+       
+}
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+   
     self.title=@"My Events";
+    
+     arrayToEvents = [[NSMutableArray alloc]init];
+     arrayToVenu = [[NSMutableArray alloc]init];
+     thmbImage = [[NSMutableArray alloc]init];
+     eventShedule = [[NSMutableArray alloc]init];
     
     UIBarButtonItem *rightBarButton =[[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStyleDone target:self action:@selector(clickEdit:)];
     self.navigationItem.rightBarButtonItem = rightBarButton;
@@ -39,28 +56,45 @@
     [customMenuBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [customMenuBtn setImage:[UIImage imageNamed:@"nav_menu_icon.png"] forState:UIControlStateNormal];
     
+    NSString *destPath1 = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+    
+    destPath1 = [destPath1 stringByAppendingPathComponent:@"userName.plist"];
+    
+    NSLog(@"tft%@",destPath1);
+    
+    
+    NSDictionary *dictValue1 = [[NSDictionary alloc]
+                                initWithContentsOfFile:destPath1];
+    
+    NSString *user_id = [dictValue1 objectForKey:@"userName"];
+    
+    NSLog(@"tft%@",user_id);
+    
+    
+    
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    [dict setObject:user_id forKey:@"user_id"];
+    
+    NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"http://108.168.203.226:8123/events/show_my_events"]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    
+    ASIHTTPRequest* request1 = [ASIHTTPRequest requestWithURL:url];
+    NSDictionary* postDict = [NSDictionary dictionaryWithObjectsAndKeys:user_id,@"user_id",nil];
+    NSString* jsonData = [postDict JSONRepresentation];
+    NSData* postData = [jsonData dataUsingEncoding:NSUTF8StringEncoding];
+    [request1 appendPostData:postData];
+    [request1 setDelegate:self];
+    [request1 startAsynchronous];
+    
     UIBarButtonItem *leftBarButton =[[UIBarButtonItem alloc] initWithCustomView:customMenuBtn];
     self.navigationItem.leftBarButtonItem = leftBarButton;
     
-}
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-   
-       arrTotalEvent=[[NSMutableArray alloc]init];
+    myActivityIndicator=[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    [myActivityIndicator setFrame:CGRectMake(140, 170, 40, 40)];
+    [self.view addSubview:myActivityIndicator];
+    [myActivityIndicator startAnimating];
     
-    for(int i=0;i<10;i++)
-    {
-        objMyEvent=[[DataMyEvent alloc]init];
-        objMyEvent.Dayimg=@"twentyeight_day.png";
-        objMyEvent.EventDateandTime=@"9:30 PM";
-        objMyEvent.EventTitle=@"Simian Mobile Disco";
-        objMyEvent.EventSubTitle=@"The Proxy";
-        [arrTotalEvent addObject:objMyEvent];
-        NSLog(@"%@",objMyEvent.EventTitle);
-        NSLog(@"%@",objMyEvent.EventSubTitle);
-        
-    }
+
+    
 }
 
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -69,7 +103,8 @@
 }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return arrTotalEvent.count;
+    return arrayToEvents.count;
+    NSLog(@"%u",arrayToEvents.count);
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -79,43 +114,64 @@
 {
 	NSString *cellIdentifier = @"CellIdentifier";
     UITableViewCell	*cell = [tblMyEvents dequeueReusableCellWithIdentifier:cellIdentifier];
-     objMyEvent=(DataMyEvent*)[arrTotalEvent objectAtIndex:indexPath.row];
+    
     cell=nil;
+    
+    asyncImageView = nil;
+       
+
     
     if(cell==nil)
     {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
         
       
-        UIImageView *imgEvent=[[UIImageView alloc]initWithFrame:CGRectMake(35, 8, 45, 45)];
-        imgEvent.image=[UIImage imageNamed:[NSString stringWithFormat:@"%@",objMyEvent.Dayimg]];
-        [cell addSubview:imgEvent];
+        if (arrayToEvents != nil) {
+            
+            [myActivityIndicator stopAnimating];
+        }
+        
+        CGRect frame;
+        frame.origin.x = 5;
+        frame.origin.y = 5;
+        frame.size.width = 56;
+        frame.size.height = 43;
+        asyncImageView = [[AsyncImageView alloc] initWithFrame:frame];//61;48
+        asyncImageView.tag = ASYNC_IMAGE_TAG;
+        [cell.contentView addSubview:asyncImageView];
+        frame.origin.x = 52 + 10;
+        frame.size.width = 200;
+        
+        UIImageView *imgEvent=[[UIImageView alloc]initWithFrame:CGRectMake(10, 8, 45, 45)];
+        
+        imgEvent.image=[self displayImage:[thmbImage objectAtIndex:indexPath.row]];
+               
+        
+//        UILabel *lblEventTime = [[UILabel alloc]initWithFrame :CGRectMake(85, 15, 80, 25)];
+//        lblEventTime.font = [UIFont boldSystemFontOfSize:13];
+//        lblEventTime.textColor =[UIColor colorWithRed:100/255.0 green:100/255.0 blue:100/255.0 alpha:1.0f];
+//        lblEventTime.tag =11;
+//        lblEventTime.backgroundColor = [UIColor clearColor];
+//        lblEventTime.text=[NSString stringWithFormat:@"%@",eventShedule];
+//        lblEventTime.textAlignment = 0;
+//        [cell addSubview:lblEventTime];
         
         
-        UILabel *lblEventTime = [[UILabel alloc]initWithFrame :CGRectMake(85, 15, 80, 25)];
-        lblEventTime.font = [UIFont boldSystemFontOfSize:13];
-        lblEventTime.textColor =[UIColor colorWithRed:100/255.0 green:100/255.0 blue:100/255.0 alpha:1.0f];
-        lblEventTime.tag =11;
-        lblEventTime.backgroundColor = [UIColor clearColor];
-        lblEventTime.text=[NSString stringWithFormat:@"%@",objMyEvent.EventDateandTime];
-        lblEventTime.textAlignment = 0;
-        [cell addSubview:lblEventTime];
         
-        UILabel *lblEventName = [[UILabel alloc]initWithFrame :CGRectMake(150, 5, 170, 25)];
-        lblEventName.font = [UIFont boldSystemFontOfSize:13];
+        UILabel *lblEventName = [[UILabel alloc]initWithFrame :CGRectMake(85, 25, 200, 25)];
+        lblEventName.font = [UIFont boldSystemFontOfSize:9];
         lblEventName.tag =11;
         lblEventName.backgroundColor = [UIColor clearColor];
-        lblEventName.text=[NSString stringWithFormat:@"%@",objMyEvent.EventTitle];
-        lblEventName.textAlignment = 0;
+        lblEventName.text=[arrayToEvents objectAtIndex:indexPath.row];
         [cell addSubview:lblEventName];
         
-        UILabel *lblEventSubDetails = [[UILabel alloc]initWithFrame :CGRectMake(150, 30, 170, 25)];
-        lblEventSubDetails.font = [UIFont boldSystemFontOfSize:13];
-        lblEventSubDetails.textColor =[UIColor colorWithRed:100/255.0 green:100/255.0 blue:100/255.0 alpha:1.0f];
-        lblEventSubDetails.tag =11;
+        
+        UILabel *lblEventSubDetails = [[UILabel alloc]initWithFrame :CGRectMake(85, 36, 200, 25)];
+        lblEventSubDetails.font = [UIFont boldSystemFontOfSize:9];
+        //lblEventSubDetails.textColor =[UIColor colorWithRed:100/255.0 green:100/255.0 blue:100/255.0 alpha:1.0f];
+        lblEventSubDetails.tag =12;
         lblEventSubDetails.backgroundColor = [UIColor clearColor];
-        lblEventSubDetails.text=[NSString stringWithFormat:@"%@",objMyEvent.EventSubTitle];
-        lblEventSubDetails.textAlignment = 0;
+        lblEventName.text=[arrayToVenu objectAtIndex:indexPath.row];
         [cell addSubview:lblEventSubDetails];
         
     }
@@ -132,6 +188,89 @@
 //        [self.navigationController pushViewController:friendRequest animated:YES];
     
  }
+
+-(UIImage*)displayImage:(NSString *)imageUrl
+
+{
+    
+    if (imageUrl == (id)[NSNull null] || imageUrl.length == 0 || [imageUrl isEqualToString:@"null"]) {
+        
+        // NSLog(@"Null Value");
+        
+    }
+    
+    
+    
+    NSData* imageData = [[NSData alloc]initWithContentsOfURL:[NSURL URLWithString:imageUrl]];
+    
+    NSURL *url = [NSURL URLWithString:imageUrl];
+    
+    [asyncImageView loadImageFromURL:url];
+    
+    
+    UIImage* image = [[UIImage alloc] initWithData:imageData];
+    
+    return image;
+   
+    
+}
+
+
+#pragma mark ASIHTTPReq Delegate
+- (void)requestStarted:(ASIHTTPRequest *)request{
+    
+    NSLog(@"requestStarted%@",request);
+    
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+    
+    NSLog(@"requestFinished%@",request);
+    
+    
+    NSString *responseString=[[request responseString]stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    NSLog(@"Response %@",responseString);
+    
+    SBJSON *parser = [[SBJSON alloc]init];
+    
+    // Here we're using NSArray since we're parsing an array of JSON status objects
+    statuses = [parser objectWithString:responseString error:nil];
+    
+    // Each element in statuses is a single status
+    // represented as a NSDictionary
+    for (NSDictionary *status in statuses) {
+        // You can retrieve individual values using objectForKey on the status NSDictionary
+        
+        
+        [arrayToEvents addObject:[[status objectForKey:@"Event"]objectForKey:@"event_name"]];
+        
+        [arrayToVenu addObject:[[status objectForKey:@"Venue"]objectForKey:@"venue_name"]];
+        
+        [thmbImage addObject:[[status objectForKey:@"Venue"]objectForKey:@"thumbnail"]];
+        
+        [eventShedule addObject:[[status objectForKey:@"MyEvent"]objectForKey:@"date"]];
+        
+            
+        [venueAddress addObject:[[status objectForKey:@"Venue"]objectForKey:@"address"]];
+        
+              
+    }
+    
+    NSLog(@"%@",arrayToEvents);
+    
+  
+    [tblMyEvents reloadData];
+    
+    
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request{
+    
+    NSLog(@"requestFailed%@",request);
+    
+}
+
 
 
 - (void)didReceiveMemoryWarning
@@ -167,8 +306,6 @@
         [tblMyEvents setEditing:NO animated:YES];
          [btn setTitle:@"Edit"];
     }
-    
-  
-    
+ 
 }
 @end

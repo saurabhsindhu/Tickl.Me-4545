@@ -25,7 +25,7 @@
     NSMutableArray *arr;
     NSMutableArray *array;
     NSMutableArray *filterArray;
-    
+    NSMutableDictionary *selectedIndexDict;
     
 }
 

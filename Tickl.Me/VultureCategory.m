@@ -110,15 +110,30 @@
         
         array = [[NSUserDefaults standardUserDefaults] objectForKey:@"id"];
         
+        NSString *destPath1 = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
         
+        destPath1 = [destPath1 stringByAppendingPathComponent:@"userName.plist"];
+        
+        NSLog(@"tft%@",destPath1);
+        
+        
+        NSDictionary *dictValue1 = [[NSDictionary alloc]
+                                    initWithContentsOfFile:destPath1];
+        
+        NSString *user_id = [dictValue1 objectForKey:@"userName"];
+        
+        NSLog(@"tft%@",user_id);
+
+        
+        NSArray *arVal = [[NSArray alloc]init];
         
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         [dict setObject:array forKey:@"id"];
              
-        NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"http://108.168.203.226:8123/events/get_vulture_data"]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"http://108.168.203.226:8123/filters/save_filters"]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
              
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:url];
-        NSDictionary* postDict = [NSDictionary dictionaryWithObjectsAndKeys:array,@"id",nil];
+        NSDictionary* postDict = [NSDictionary dictionaryWithObjectsAndKeys:array,@"vulture_id",user_id,@"user_id",arVal,@"category_id", nil];
         NSString* jsonData = [postDict JSONRepresentation];
         NSData* postData = [jsonData dataUsingEncoding:NSUTF8StringEncoding];
         [request appendPostData:postData];

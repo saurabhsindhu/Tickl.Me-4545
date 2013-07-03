@@ -42,6 +42,8 @@
 	EKEventStore *eventStore;
 	EKCalendar *defaultCalendar;
 	NSMutableArray *eventsList;
+    
+    BOOL getit;
    
     
 }

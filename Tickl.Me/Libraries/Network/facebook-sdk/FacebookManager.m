@@ -595,6 +595,8 @@ static FacebookManager *sharedInstance = nil;
     
     NSLog(@"requestFinished%@",request);
     
+  //  NSLog(@"Response %@",responseString);
+    
     if (getResponse==YES){
     
     responseString=[[request responseString]stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];

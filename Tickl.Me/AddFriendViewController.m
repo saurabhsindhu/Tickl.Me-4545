@@ -10,6 +10,15 @@
 #import "RequsetsViewController.h"
 #import "Tweet.h"
 #import "TwitterConnection.h"
+#import "RequsetsViewController.h"
+#import "FBDialog.h"
+#import "SBJsonParser.h"
+#import "JSON.h"
+#import "AppDelegate.h"
+#import "UIButton+WebCache.h"
+#import "UIImageView+WebCache.h"
+#import <QuartzCore/QuartzCore.h>
+
 #define IMAGE_PREVIEW_TAG 11
 #define NAME_LABEL_TAG 10
 
@@ -78,6 +87,92 @@
     
 }
 
+#pragma mark
+#pragma Fb
+
+-(void)sendFBPost:(int)tag
+{
+    
+    NSString *Message = [NSString stringWithFormat:@"-Posted via Events iPhone App"];
+    NSMutableDictionary *params1 = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                    Message, @"message", nil];
+    NSString *post=[[appDelegate.FBFriendListArray objectAtIndex:tag] objectForKey:@"id"];
+    
+    [[appDelegate facebook] requestWithGraphPath:[NSString stringWithFormat:@"/%@/feed",post] andParams:params1 andHttpMethod:@"POST" andDelegate:self];
+    UIAlertView  *alert = [[UIAlertView alloc] initWithTitle:@"Message!" message:@"Invitation Send Sucessfully" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+	[alert show];
+	
+}
+
+
+#pragma mark - FBSessionDelegate Methods
+
+/**
+ * Called when the user has logged in successfully.
+ */
+- (void)fbDidLogin
+{
+    
+    [self showLoggedIn];
+    
+    // Save authorization information
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:[[appDelegate facebook] accessToken] forKey:@"FBAccessTokenKey"];
+    [defaults setObject:[[appDelegate facebook] expirationDate] forKey:@"FBExpirationDateKey"];
+    [defaults synchronize];
+}
+
+
+
+- (void) showLoggedIn
+{
+    [self apiFQLIMe];
+}
+- (void)authorize:(NSArray *)permissions
+{
+    
+}
+
+- (void) apiFQLIMe
+{
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                   @"SELECT uid,name,birthday,first_name,last_name,current_location,pic,email,sex FROM user WHERE uid=me()", @"query",
+                                   nil];
+    
+	
+    [[appDelegate facebook] requestWithMethodName:@"fql.query"
+                                        andParams:params
+                                    andHttpMethod:@"POST"
+                                      andDelegate:self];
+    
+    
+    [[appDelegate facebook] requestWithGraphPath:@"me/friends" andDelegate:self];
+    
+}
+
+- (void)request:(FBRequest *)request didLoad:(id)result
+{
+    //NSLog(@"result is %@",result);
+    
+    if ([result isKindOfClass:[NSArray class]])
+	{
+        result = [result objectAtIndex:0];
+    }
+    // This callback can be a result of getting the user's basic
+    // information or getting the user's permissions.
+    
+    if ([result objectForKey:@"data"])
+	{
+		appDelegate.FBFriendListArray = [result objectForKey:@"data"];
+        
+        
+	}
+    [tblAddFriend reloadData];
+}
+
+
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if([showListingUsers isEqualToString:@"Twitter"]){
@@ -94,7 +189,7 @@
     
     if([showListingUsers isEqualToString:@"Facebook"]){
         
-        return arrFacebookFriend.count;
+        return [appDelegate.FBFriendListArray count];
         
     }
 
@@ -103,7 +198,7 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 60;
+    return 70;
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -121,24 +216,41 @@
         UIButton *btnAddFriend=[UIButton buttonWithType:UIButtonTypeCustom];
         if([showListingUsers isEqualToString:@"Facebook"])
         {
-            FBFriend *friend=[[FBFriend alloc]init];
-            friend=(FBFriend*)[arrFacebookFriend objectAtIndex:indexPath.row];
+            UILabel *lbl=[[UILabel alloc]initWithFrame:CGRectMake(15,2,150,20)];
+            // lbl.tag=MYPRICELABEL_TAG;
+            lbl.font=[UIFont systemFontOfSize:15.0];
+            lbl.textColor=[UIColor blackColor];
+            [lbl setBackgroundColor:[UIColor clearColor]];
+            //ADD THE LABEL TO CELLS CONTACT VIEW
+            [cell.contentView addSubview:lbl];
             
-            NSURL *url = [NSURL URLWithString:friend.fbPicture];
-            NSData *data = [NSData dataWithContentsOfURL:url];
-            UIImage *image = [UIImage imageWithData:data];
-            imgFriend.image=image;
-            [cell addSubview:imgFriend];
+            UIButton *ProfileImageButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 10, 60, 60)];
+            [ProfileImageButton setBackgroundColor:[UIColor clearColor]];
+            [ProfileImageButton setClearsContextBeforeDrawing:YES];
+            [ProfileImageButton setUserInteractionEnabled:NO];
+            NSString *ImagePath =[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture",[[appDelegate.FBFriendListArray objectAtIndex:indexPath.row] objectForKey:@"id"]];
             
-            lblFriendName.backgroundColor=[UIColor clearColor];
-            lblFriendName.text=[NSString stringWithFormat:@"%@",friend.fbName];
-            lblFriendName.font=[UIFont boldSystemFontOfSize:14];
-            [cell addSubview:lblFriendName];
+            [ProfileImageButton setImageWithURL:[NSURL URLWithString:ImagePath] placeholderImage:[UIImage imageNamed:@"nouser.png"]];
+            [cell.contentView addSubview:ProfileImageButton];
+            
+            
+            
+            
+            UILabel *NameLabel=[[UILabel alloc]initWithFrame:CGRectMake(80, 20, 300, 30)];
+            [NameLabel setTextColor:[UIColor blackColor]];
+            [NameLabel setBackgroundColor:[UIColor clearColor]];
+            [NameLabel setTextAlignment:UITextAlignmentLeft];
+            [NameLabel setFont:[UIFont systemFontOfSize:16.0f]];
+            [NameLabel setText:[NSString stringWithFormat:@"%@",[[appDelegate.FBFriendListArray objectAtIndex:indexPath.row] valueForKey:@"name"]]];
+            [cell.contentView addSubview:NameLabel];
+            
             
             btnAddFriend.frame=CGRectMake(270, 5, 25, 25);
             [btnAddFriend setImage:[UIImage imageNamed:@"imgAddFriend.png"] forState:UIControlStateNormal];
             [btnAddFriend addTarget:self action:@selector(sendInvitaionFormApp:) forControlEvents:UIControlEventTouchUpInside];
             [cell addSubview:btnAddFriend];
+            
+            
         }
         else if ([showListingUsers isEqualToString:@"Twitter"])
         {
@@ -161,6 +273,12 @@
             [NameLabel setFont:[UIFont systemFontOfSize:11.0f]];
             [NameLabel setText:[fndname objectAtIndex:indexPath.row]];
             [cell addSubview:NameLabel];
+            
+            btnAddFriend.frame=CGRectMake(270, 5, 25, 25);
+            [btnAddFriend setImage:[UIImage imageNamed:@"imgAddFriend.png"] forState:UIControlStateNormal];
+            [btnAddFriend addTarget:self action:@selector(sendInvitaionFormApp2:) forControlEvents:UIControlEventTouchUpInside];
+            [cell addSubview:btnAddFriend];
+
 
             
         }
@@ -225,6 +343,54 @@
     }
     currentMaxDisplayedCell = indexPath.row;
 }
+
+-(void)sendInvitaionFormApp2:(id)sender{
+    
+    
+    
+}
+
+-(void)sendInvitaionFormApp:(id)sender
+{
+    
+    UITableViewCell *cell1 = ((UITableViewCell *)[sender superview]);
+    
+    NSLog(@"cell row: int%i", [tblAddFriend indexPathForCell:cell1].row);
+    
+    
+    [self sendFBPost:[tblAddFriend indexPathForCell:cell1].row];
+}
+
+- (void)request:(FBRequest *)request didLoadRawResponse:(NSData *)data {
+}
+
+- (void)request:(FBRequest *)request didReceiveResponse:(NSURLResponse *)response{
+    
+}
+
+#pragma mark Fb Delegate
+
+- (void) facebookLoginFailed{
+    
+    
+}
+
+- (void) facebookLoginSucceeded{
+    
+    
+}
+
+- (void)requestLoading:(FBRequest *)request{
+    
+}
+- (void) friendsListLoaded:(NSMutableArray*) array
+{
+    arrFriendList=array;
+    
+    [tblAddFriend reloadData];
+}
+
+
 
 #pragma mark - Facebook server calls
 
@@ -363,7 +529,7 @@
 
 //commented init due to crash!
 
--(void)sendInvitaionFormApp:(id)sender
+-(void)sendInvitaionFormApp1:(id)sender
 {
     
     UITableViewCell *cell1 = ((UITableViewCell *)[sender superview]);
@@ -375,25 +541,7 @@
     //
     //     [self.navigationController pushViewController:reqView animated:YES];
     
-    FacebookManager *myFacebook = [FacebookManager sharedInstance];
-    [myFacebook setDelegate:self];
-    FBFriend * friend=(FBFriend*)[arrFriendList objectAtIndex:0];
-    NSString *kAppId=[FacebookManager sharedInstance].appID;
-    NSString *path=[[NSBundle mainBundle] pathForResource:@"wildFlower" ofType:@"jpg"];
-    
-    NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                   kAppId, @"app_id",
-                                   @"https://developers.apple.com", @"link",
-                                   /*@"http://www.impactinstruction.com/wordpress/wp-content/uploads/2012/04/practice1.jpg"*/path, @"picture",
-                                   @"Facebook Dialogs", @"name",
-                                   @"Reference Documentation", @"caption",
-                                   friend.fbId,@"to",
-                                   @"Using Dialogs to interact with users.", @"description",
-                                   nil];
-    // FBDialog *facebook=[[FBDialog alloc]init];
-    //[[[FacebookManager sharedInstance] facebook] dialog:@"feed" andParams:params andDelegate:self];
-    //  [myFacebook inviteFriendtoApp:[arrFriendList objectAtIndex:0]];
-    
+       
 }
 
 
@@ -529,8 +677,6 @@
 }
 
 
-
-
 - (IBAction)btnSegentEmailCliceked:(UISegmentedControl *)sender {
     if(sender.selectedSegmentIndex==0){
         
@@ -546,36 +692,32 @@
     else if (sender.selectedSegmentIndex==1)
     {
                 
+        showListingUsers=@"Facebook";
+        
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        
+        
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        
-        
-        if([[defaults valueForKey:@"LoginVia"] isEqualToString:@"loginFromFacebook"])
-        {
-            FacebookManager *myFacebook = [FacebookManager sharedInstance];
-            [myFacebook setDelegate:self];
-            [myFacebook getFriends];
-            showListingUsers=@"Facebook";
-        }
-        else
-        {
-            FacebookManager *myFacebook = [FacebookManager sharedInstance];
-            NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:@"access_token"];
-            NSDate *expirationDate = [[NSUserDefaults standardUserDefaults] objectForKey:@"expiration_date"];
-            [myFacebook setDelegate:self];
-            if (accessToken && expirationDate)
-            {
-                [myFacebook authorizeWithAccessToken:accessToken expirationDate:expirationDate];
-            }
-            else
-                [myFacebook authorize];
-            [defaults setValue:@"loginFromFacebook" forKey:@"LoginVia"];
-            FacebookManager *myFacebook1 = [FacebookManager sharedInstance];
-            [myFacebook1 setDelegate:self];
-            [myFacebook1 getFriends];
-            showListingUsers=@"Facebook";
+        if ([defaults objectForKey:@"FBAccessTokenKey"]
+            && [defaults objectForKey:@"FBExpirationDateKey"]) {
+            [appDelegate facebook].accessToken = [defaults objectForKey:@"FBAccessTokenKey"];
+            [appDelegate facebook].expirationDate = [defaults objectForKey:@"FBExpirationDateKey"];
         }
         
-         [tblAddFriend reloadData];
+        if (![[appDelegate facebook] isSessionValid])
+        {
+            [appDelegate facebook].sessionDelegate = self;
+            appDelegate.userPermissions = [[NSArray alloc] initWithObjects:
+                                           @"read_stream", @"publish_stream", @"email", @"offline_access",@"friends_checkins",@"friends_about_me",@"user_games_activity",nil];
+            
+            [[appDelegate facebook] authorize:appDelegate.userPermissions];
+            
+        }
+        else {
+            [self showLoggedIn];
+        }
+        
+        [tblAddFriend reloadData];
     }
     else  if(sender.selectedSegmentIndex==2)
     {

@@ -38,7 +38,8 @@
     localImages = [[NSArray alloc] initWithObjects: @"lava.jpeg", @"hawaii.jpeg", @"audi.jpg",nil];
     
     networkCaptions = [[NSArray alloc] initWithObjects:@"Happy New Year!",@"Frosty Web",nil];
-    networkImages = [[NSArray alloc] initWithObjects:@"http://farm6.static.flickr.com/5042/5323996646_9c11e1b2f6_b.jpg", @"http://farm6.static.flickr.com/5007/5311573633_3cae940638.jpg",nil];
+     networkImages = [[NSArray alloc] initWithObjects:@"http://www.event-source.com//esimages//P_0011694_H1.JPG", @"http://www.event-source.com//esimages//P_0570769_H1.JPG",nil];
+
 
     // Do any additional setup after loading the view from its nib.
     
@@ -187,12 +188,12 @@
 -(IBAction)clickMyPhotos:(id)sender;
 {
     
-    PhotoGalleryViewController *objMyPhotos = [[PhotoGalleryViewController alloc] init];
-    [self.navigationController pushViewController:objMyPhotos animated:YES];
+//    PhotoGalleryViewController *objMyPhotos = [[PhotoGalleryViewController alloc] init];
+//    [self.navigationController pushViewController:objMyPhotos animated:YES];
 
-//   	networkGallery = [[FGalleryViewController alloc] initWithPhotoSource:self];
-//    [self.navigationController pushViewController:networkGallery animated:YES];
-//    
+   	networkGallery = [[FGalleryViewController alloc] initWithPhotoSource:self];
+    [self.navigationController pushViewController:networkGallery animated:YES];
+    
     
     
 }

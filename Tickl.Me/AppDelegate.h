@@ -7,14 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FBConnect.h"
 
 @class ViewController;
 @class DDMenuController;
 @class MenuViewController;
 @class MapView_ViewController;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate,FBSessionDelegate>
 {
+     Facebook *facebook;
     int currentMenuIndex;
     NSString *mFlashType;
     BOOL librarySelect;
@@ -37,6 +39,13 @@
 @property (nonatomic, retain)  NSString *mFlashType;
 @property (nonatomic, assign)  BOOL librarySelect;
 @property (nonatomic, assign)  BOOL camera;
+
+@property (nonatomic, retain)NSString *devicestr;
+@property (nonatomic, retain)NSString *_deviceToken;
+@property (nonatomic, retain) Facebook *facebook;
+@property (nonatomic, retain) NSMutableArray *FBFriendListArray;
+@property (strong, nonatomic) Facebook *fbInstance;
+@property (nonatomic, retain) NSMutableDictionary *userPermissions;
 
 
 - (void)showMenu;

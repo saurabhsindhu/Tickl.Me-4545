@@ -14,8 +14,11 @@
 #import <Twitter/Twitter.h>
 #import <Accounts/Accounts.h>
 #import "FBConnect.h"
+#import "ASIHTTPRequest.h"
 
-@interface AddFriendViewController : UIViewController<FacebookManagerDelegate,FBRequestDelegate>
+@class AppDelegate;
+
+@interface AddFriendViewController : UIViewController<FBRequestDelegate,FBSessionDelegate,FBDialogDelegate>
 
 {
     NSMutableArray *arrFriendList;
@@ -46,6 +49,21 @@
     int _pageNo;
     NSMutableArray *_friends;
     Facebook *_facebook;
+    
+    //fb table variable...
+    
+    UITableView *tvFriends;
+    AppDelegate *appDelegate;
+    UILabel *lblCoins;
+    UILabel *lblDinamite;
+    
+    //setting button////
+    UIWindow *keyValue;
+    UISwitch *sw;
+    NSString *privacyStatus;
+    UIView *myView;
+	UITableView *table;
+    UIView *myview;
 
 }
 

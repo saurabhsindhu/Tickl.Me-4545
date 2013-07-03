@@ -13,6 +13,7 @@
 #import "AppDelegate.h"
 #import "EventSubCategoriesViewController.h"
 #import "VultureCategory.h"
+#import "PeoplelikeMeViewController.h"
 
 @interface Filters_ViewController ()
 {
@@ -126,15 +127,49 @@
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 	}
     
-//    UIImageView *imgEvent=[[UIImageView alloc]initWithFrame:CGRectMake(10, 8, 45, 45)];
-//    imgEvent.image=[self displayImage:[thumbImage objectAtIndex:indexPath.row]];
-//    [cell addSubview:imgEvent];
+//    UIImage *image = [UIImage imageNamed:@"blue_arrow.png"];
+//    
+//    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+//    CGRect frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height);
+//    button.frame = frame;   // match the button's size with the image size
+//    
+//    //[button setBackgroundImage:image forState:UIControlStateNormal];
+//    [button setImage:image forState:UIControlStateNormal];
+//    // set the button's target to this table view controller so we can interpret touch events and map that to a NSIndexSet
+//    [button addTarget:self action:@selector(checkButtonTapped:event:) forControlEvents:UIControlEventTouchUpInside];
+//    button.backgroundColor = [UIColor clearColor];
+//    cell.accessoryView = button;
     
     cell.imageView.image = [UIImage imageNamed:[thumbImage objectAtIndex:indexPath.row]];
     
     cell.textLabel.text = [stringArray objectAtIndex:indexPath.row];
     
     return cell;
+}
+
+
+- (void)checkButtonTapped:(id)sender event:(id)event
+{
+    
+    NSSet *touches = [event allTouches];
+    UITouch *touch = [touches anyObject];
+    CGPoint currentTouchPosition = [touch locationInView:tableViewFilters];
+    NSIndexPath *indexPath = [tableViewFilters indexPathForRowAtPoint: currentTouchPosition];
+    NSLog(@"Section:%d",indexPath.section);
+    NSLog(@"Index:%d",indexPath.row);
+    if (indexPath != nil)
+    {
+        [ self tableView:tableViewFilters accessoryButtonTappedForRowWithIndexPath: indexPath];
+        
+    }
+    
+}
+
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
+    
+    NSLog(@"%d",indexPath.section);
+    
 }
 
 
@@ -148,8 +183,8 @@
     if (indexPath.row == 0) {
         
         
-        EventSubCategoriesViewController *eventSub=[[EventSubCategoriesViewController alloc]initWithNibName:@"EventSubCategoriesViewController" bundle:nil];
-        eventSub.strMainCategoryName=@"People Like Me";
+        PeoplelikeMeViewController *eventSub=[[PeoplelikeMeViewController alloc]initWithNibName:@"PeoplelikeMeViewController" bundle:nil];
+        //eventSub.strMainCategoryName=@"People Like Me";
         [self.navigationController pushViewController:eventSub animated:YES];
 
     }

@@ -8,13 +8,26 @@
 
 #import <UIKit/UIKit.h>
 #import "DataMyEvent.h"
-@interface MyEvents_ViewController : UIViewController<UITableViewDelegate,UITableViewDataSource>
+#import "ASIHTTPRequest.h"
+#import "AsyncImageView.h"
+
+@interface MyEvents_ViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,ASIHTTPRequestDelegate>
 {
+    
     IBOutlet UITableView *tblMyEvents;
     NSMutableArray *arrFriendList;
     IBOutlet UIButton *btnEdit;
    DataMyEvent *objMyEvent;
     NSMutableArray *arrTotalEvent;
+    NSMutableArray *statuses;
+    NSMutableArray *arrayToEvents;
+    NSMutableArray *arrayToVenu;
+    NSMutableArray *thmbImage;
+    NSMutableArray *eventShedule;
+    NSMutableArray *venueAddress;
+    AsyncImageView *asyncImageView;
+    
+    UIActivityIndicatorView *myActivityIndicator;
 
 }
 - (IBAction)clickAddToCalendar:(id)sender;

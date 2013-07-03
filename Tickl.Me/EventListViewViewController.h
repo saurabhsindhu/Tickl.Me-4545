@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "DataMyEvent.h"
 #import "AsyncImageView.h"
+#import <MapKit/MapKit.h>
 
-@interface EventListViewViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>
+@interface EventListViewViewController : UIViewController<CLLocationManagerDelegate,UITableViewDataSource,UITableViewDelegate>
 {
     NSArray *thumImages;
     IBOutlet UITableView *tblMyEvents;
@@ -27,8 +28,20 @@
     NSMutableArray *latitude,*longitude;
     NSMutableArray *venueAddress;
     NSMutableArray *description;
+    NSMutableArray *locationValue;
+    NSMutableArray *minTime,*hourTime;
     
     AsyncImageView *asyncImageView;
+    
+    
+    CLLocationManager *locationManager;
+    
+    CLLocation *currentLocation;
+    
+    float currentLat;
+    
+    float currentLong;
+    
 }
 - (IBAction)btnBackClicked:(UIButton *)sender;
 @end

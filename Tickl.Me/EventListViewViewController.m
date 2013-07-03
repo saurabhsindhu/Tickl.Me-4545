@@ -13,6 +13,9 @@
 #import "AsyncImageView.h"
 #import "JSON.h"
 #import "CheckInView.h"
+#import "UIButton+WebCache.h"
+#import "UIImageView+WebCache.h"
+#import "EventsDetail.h"
 
 #define ASYNC_IMAGE_TAG 9999
 
@@ -30,11 +33,20 @@
     }
     return self;
 }
-
 - (void)viewDidLoad
 {
-    
+   
     [super viewDidLoad];
+   
+    
+    NSMutableArray *imagArray = [[NSMutableArray alloc]initWithObjects:@"Blue-List_Added-a-Friend.png",@"Blue-List_Added-to-My-Calendar.png",@"Blue-List_Art.png",@"Blue-List_Comedy.png",@"Blue-List_Dance.png",@"Blue-List_Event-Categories.png",@"Blue-List_Event-Check-in.png",@"Blue-List_Family-Friendly.png",@"Blue-List_Favorites.png",@"Blue-List_Free-or-Cheap.png",@"Blue-List_High-Culture.png",@"Blue-List_Movies.png",@"Orange-List_Music.png",@"Blue-List_Odd-and-Offbeat.png",@"Blue-List_Once-in-a-Lifetime.png",@"Blue-List_People-Like-Me.png",@"Blue-List_scan-my-friends.png",@"Blue-List_Special-Events.png",@"Blue-List_Sports.png",@"Blue-List_Talks-and-Readings.png",@"Blue-List_Theater.png",@"Blue-List_Vultures.png",nil];
+    
+    //current lat/long
+    
+    locationManager = [[CLLocationManager alloc] init];
+    locationManager.delegate = self;
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    [locationManager startUpdatingLocation];
     
     // path for filter
     
@@ -43,10 +55,9 @@
     
     
     
-    NSDictionary *dictValue = [[NSDictionary alloc]
-                               initWithContentsOfFile:destPath];
+   /* NSDictionary *dictValue = [[NSDictionary alloc]
+                               initWithContentsOfFile:destPath]; */
     
-    NSString *strVal = [dictValue objectForKey:@"Filter"];
     
       
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -90,15 +101,21 @@
     
     thumImages = [[NSMutableArray alloc]init];
     
+    locationValue = [[NSMutableArray alloc]init];
+    
+    minTime = [[NSMutableArray alloc]init];
+    
+    hourTime = [[NSMutableArray alloc]init];
+    
     //***********************JSON Value******************************//
     
     SBJSON *parser = [[SBJSON alloc]init];
     
-    if (myBool==NO){
+   
         
         //http://108.168.203.226:8123/events/get_list_events
         
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://108.168.203.226:8123/events/get_list_events"]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://108.168.203.226:8123/events/get_favorites_filter/page:1"]];
         
         // Perform request and get JSON back as a NSData object
         NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
@@ -111,14 +128,8 @@
         statuses = [parser objectWithString:json_string error:nil];
         
         
-        
-    }
-    
-    else {
-        
-        statuses = [parser objectWithString:strVal error:nil];
-    }
-    
+             
+       
     // Prepare URL request to download statuses from Twitter
     // NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://108.168.203.226:8123/events/get_event_data"]];
     
@@ -157,9 +168,18 @@
         
     }
     
+    
+    
     //***************************************************************//
     
-    
+          
+        
+//        if ([[[eventType objectAtIndex:valEvent]valueForKey:@"Event"]valueForKey:@"event_type"]==@"Special Event"){
+//          
+//            NSLog(@"HI");
+//            
+//        }
+  
     
     UIButton *customMenuBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     customMenuBtn.frame = CGRectMake(10, 7.5, 30, 30);
@@ -183,27 +203,16 @@
     
     arrTotalEvent=[[NSMutableArray alloc]initWithObjects:nil];
     
-    for(int i=0;i<10;i++)
-    {
-        objMyEvent=[[DataMyEvent alloc]init];
-        objMyEvent.Dayimg=@"twentyeight_day.png"; //event thumbsnail
-        objMyEvent.EventDateandTime=@"9:30 PM"; // event date & time
-        objMyEvent.EventTitle=@"Simian Mobile Disco"; // event name
-        objMyEvent.EventSubTitle=@"The Proxy";//event description
-        [arrTotalEvent addObject:objMyEvent];
-        // NSLog(@"%@",objMyEvent.EventTitle);
-        // NSLog(@"%@",objMyEvent.EventSubTitle);
-        
-    }
-}
+   }
+
+
+
 
 -(void)viewDidAppear:(BOOL)animated{
     
     [super viewDidAppear:YES];
     
-    
-    
-    
+      
 }
 
 - (void)backBtnClicked {
@@ -229,7 +238,7 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CheckInView *takeImage=[[CheckInView alloc]init];
+    EventsDetail *takeImage=[[EventsDetail alloc]init];
     [[self navigationController]pushViewController:takeImage animated:YES];
     
 }
@@ -243,7 +252,7 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 80;
+    return 90;
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -259,45 +268,193 @@
     {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
         
-        CGRect frame;
-        frame.origin.x = 5;
-        frame.origin.y = 5;
-        frame.size.width = 56;
-        frame.size.height = 43;
-        asyncImageView = [[AsyncImageView alloc] initWithFrame:frame];//61;48
-        asyncImageView.tag = ASYNC_IMAGE_TAG;
-        [cell.contentView addSubview:asyncImageView];
-        frame.origin.x = 52 + 10;
-        frame.size.width = 200;
+//        UIButton *ProfileImageButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 10, 40, 40)];
+//        [ProfileImageButton setBackgroundColor:[UIColor clearColor]];
+//        [ProfileImageButton setClearsContextBeforeDrawing:YES];
+//        [ProfileImageButton setUserInteractionEnabled:NO];
+//        NSString *ImagePath =[thmbImage objectAtIndex:indexPath.row];
+//        
+//        [ProfileImageButton setImageWithURL:[NSURL URLWithString:ImagePath] placeholderImage:[UIImage imageNamed:@"nouser.png"]];
+//        [cell.contentView addSubview:ProfileImageButton];
+//        
+      
         
-        UIImageView *imgEvent=[[UIImageView alloc]initWithFrame:CGRectMake(10, 8, 45, 45)];
-        //imgEvent.image=[UIImage imageNamed:[NSString stringWithFormat:@"%@",objMyEvent.Dayimg]];
-        //imgEvent.image=[UIImage imageNamed:[thumImages objectAtIndex:14]];
-        //imgEvent.image=[thmbImage objectAtIndex:indexPath.row];
-        imgEvent.image=[self displayImage:[thmbImage objectAtIndex:indexPath.row]];
-        // [cell addSubview:imgEvent];
-        //NSURL *url = [NSURL URLWithString:[thmbImage objectAtIndex:indexPath.row]];
-        //[asyncImageView loadImageFromURL:url];
+        UIImageView *imv = [[UIImageView alloc]initWithFrame:CGRectMake(7,55,264,4)];
+        imv.image=[UIImage imageNamed:@"iPhone_11.png"];
+        [cell addSubview:imv];
+    
+       
+        //curr loc
+        
+                  
+            CLLocationManager *locationManager1 = [[CLLocationManager alloc] init];
+            
+                locationManager1.delegate = self;
+                locationManager1.desiredAccuracy = kCLLocationAccuracyBest;
+                locationManager1.distanceFilter = kCLDistanceFilterNone;
+                [locationManager1 startUpdatingLocation];
+            
+            
+            
+            CLLocation *location = [locationManager1 location];
+            CLLocationCoordinate2D coordinate = [location coordinate];
+            
+                
+            
+        for (int curL = 0; curL < [arrayToEvents count]; curL++) {
+            
+            double laaat = [[latitude objectAtIndex:curL]doubleValue];
+            
+            double loong = [[longitude objectAtIndex:curL]doubleValue];
+            
+//            NSLog(@"%f%f",laaat,loong);
+            
+            
+            CLLocation *LocationAtual = [[CLLocation alloc] initWithLatitude:laaat longitude:loong];
+            
+            CLLocationDistance kilometers = [location distanceFromLocation:LocationAtual] / 1000; // Error ocurring here.
+            
+            float miles = kilometers*0.62;
+            
+//            NSLog(@"%f",miles);
+            
+            NSString *latlong = [NSString stringWithFormat:@"%f",miles];
+            
+            [locationValue addObject:latlong];
+            
+            
+        }
         
         
+       
+       
         
-        UILabel *lblEventTime = [[UILabel alloc]initWithFrame :CGRectMake(185, 50, 80, 25)];
+        UILabel *lblEventTime = [[UILabel alloc]initWithFrame :CGRectMake(232, 52, 10, 25)];
         lblEventTime.font = [UIFont boldSystemFontOfSize:13];
         lblEventTime.textColor =[UIColor colorWithRed:100/255.0 green:100/255.0 blue:100/255.0 alpha:1.0f];
         lblEventTime.tag =11;
         lblEventTime.backgroundColor = [UIColor clearColor];
-        //NSString* foo = @"safgafsfhsdhdfs gfdgdsgsdggdfsgsdgsd";
-        //NSArray* stringComponents = [foo componentsSeparatedByString:@" "];
+       
+        
+        //logic for difference in time here...
+        
+       
+        NSDate *date = [NSDate date];
+        NSLog(@"Current Time: %@", date);//Current Time: 2013-07-02 06:33:25 +0000
         
         
         
-        lblEventTime.text=[eventShedule objectAtIndex:indexPath.row];
+        
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        // this is imporant - we set our input date format to match our input string
+        // if format doesn't match you'll get nil from your string, so be careful
+        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
+        
+        NSString *dateString = [dateFormatter stringFromDate:date];
+        
+        NSLog(@"%@",dateString);
+        
+        NSArray *subString1 = [dateString componentsSeparatedByString:@" "];
+        NSInteger firstVal1 =  [[subString1 objectAtIndex:1]integerValue];
+        NSString *thirdVal1 = [subString1 objectAtIndex:1];
+        NSString *secondVal1 = [subString1 objectAtIndex:0];
+        
+        NSLog(@"Se%ddSVa%@",firstVal1,secondVal1);
+        
+        NSLog(@"%@",thirdVal1);
+        
+        NSArray *monthStr = [thirdVal1 componentsSeparatedByString:@":"];
+        NSInteger monstr = [[monthStr objectAtIndex:1]integerValue];
+        NSLog(@"%d",monstr);
+        
+              
+        NSLog(@"%@",eventShedule);
+        
+        for (int valTime = 0; valTime<[arrayToEvents count]; valTime++) {
+            
+            
+            NSArray *subString = [[eventShedule objectAtIndex:valTime] componentsSeparatedByString:@" "];
+            NSInteger firstVal =  [[subString objectAtIndex:1]integerValue];
+          //  NSInteger thirdVal =  [[subString objectAtIndex:2]integerValue];
+            NSString *secondVal = [subString objectAtIndex:0];
+             NSString *thirdValue1 = [subString objectAtIndex:1];
+            
+            NSLog(@"S%dSV%@",firstVal,secondVal);
+            
+            NSArray *monthStr1 = [thirdValue1 componentsSeparatedByString:@":"];
+            NSInteger monstr1 = [[monthStr1 objectAtIndex:1]integerValue];
+            NSLog(@"%d",monstr1);
+
+            
+          //  NSLog(@"%d",thirdVal);
+            
+            int comVal = firstVal - firstVal1;
+            
+            int comVal1 = monstr - monstr1;
+            
+            NSLog(@"%i",comVal);
+            
+            NSLog(@"%i",comVal1);
+            
+           NSString *hrStr = [NSString stringWithFormat:@"%i",comVal];
+            
+            NSString *minStr = [NSString stringWithFormat:@"%i",comVal1];
+            
+            [hourTime addObject:hrStr];
+            
+            [minTime addObject:minStr];
+                        
+        }
+        
+        
+        
+        lblEventTime.text=[hourTime objectAtIndex:indexPath.row];
         UIFont *myFont1 = [ UIFont fontWithName: @"Arial" size: 10.0 ];
         lblEventTime.font  = myFont1;
         lblEventTime.textAlignment = 0;
         [cell addSubview:lblEventTime];
         
-        // NSLog(@"Shedule%@",eventShedule);
+        
+        NSString *lblStrVal = @"Starts in";
+        
+        UILabel *lblStrVa = [[UILabel alloc]initWithFrame :CGRectMake(190, 52, 40, 25)];
+        lblStrVa.font = [UIFont boldSystemFontOfSize:9];
+        lblStrVa.tag =21;
+        lblStrVa.backgroundColor = [UIColor clearColor];
+        lblStrVa.text=lblStrVal;
+        lblStrVa.textAlignment = 0;
+        [cell addSubview:lblStrVa];
+        
+        NSString *hrVal = @"hrs";
+        
+        UILabel *hrVa = [[UILabel alloc]initWithFrame :CGRectMake(245, 52,15, 25)];
+        hrVa.font = [UIFont boldSystemFontOfSize:9];
+        hrVa.tag =22;
+        hrVa.backgroundColor = [UIColor clearColor];
+        hrVa.text=hrVal;
+        hrVa.textAlignment = 0;
+        [cell addSubview:hrVa];
+        
+        UILabel *lblEventMin = [[UILabel alloc]initWithFrame :CGRectMake(263, 52, 15, 25)];
+        lblEventMin.font = [UIFont boldSystemFontOfSize:9];
+        lblEventMin.tag =27;
+        lblEventMin.backgroundColor = [UIColor clearColor];
+        lblEventMin.text=[minTime objectAtIndex:indexPath.row];
+                
+        lblEventMin.textAlignment = 0;
+        [cell addSubview:lblEventMin];
+
+        NSString *minVal = @"mins";
+        
+        UILabel *minVa = [[UILabel alloc]initWithFrame :CGRectMake(280, 52,30, 25)];
+        minVa.font = [UIFont boldSystemFontOfSize:9];
+        minVa.tag =28;
+        minVa.backgroundColor = [UIColor clearColor];
+        minVa.text=minVal;
+        minVa.textAlignment = 0;
+        [cell addSubview:minVa];
+        
+
         
         NSDateFormatter *DateFormatter=[[NSDateFormatter alloc] init];
         [DateFormatter setDateFormat:@"yyyy-MM-dd hh:mm:ss"];
@@ -331,12 +488,38 @@
         lblEventName.textAlignment = 0;
         [cell addSubview:lblEventName];
         
-        UILabel *lblEventSubDetails = [[UILabel alloc]initWithFrame :CGRectMake(15, 52, 165, 25)];
+        
+        UILabel *lblLocation = [[UILabel alloc]initWithFrame :CGRectMake(70, 31, 80, 25)];
+        lblLocation.font = [UIFont boldSystemFontOfSize:9];
+        lblLocation.tag =17;
+        lblLocation.backgroundColor = [UIColor clearColor];
+        lblLocation.text=[locationValue objectAtIndex:indexPath.row];
+        // cell.textLabel.text = [arrayToEvents objectAtIndex:indexPath.row];
+        
+        
+        lblLocation.textAlignment = 0;
+        [cell addSubview:lblLocation];
+        
+        NSString *string = @"miles away";
+        
+        UILabel *lblStr = [[UILabel alloc]initWithFrame :CGRectMake(120, 31, 170, 25)];
+        lblStr.font = [UIFont boldSystemFontOfSize:9];
+        lblStr.tag =18;
+        lblStr.backgroundColor = [UIColor clearColor];
+        lblStr.text=string;
+        // cell.textLabel.text = [arrayToEvents objectAtIndex:indexPath.row];
+        
+        
+        lblStr.textAlignment = 0;
+        [cell addSubview:lblStr];
+
+        
+        UILabel *lblEventSubDetails = [[UILabel alloc]initWithFrame :CGRectMake(5, 52, 175, 25)];
         lblEventSubDetails.font = [UIFont boldSystemFontOfSize:13];
         lblEventSubDetails.textColor =[UIColor colorWithRed:100/255.0 green:100/255.0 blue:100/255.0 alpha:1.0f];
-        lblEventSubDetails.tag =11;
+        lblEventSubDetails.tag =19;
         lblEventSubDetails.backgroundColor = [UIColor clearColor];
-        lblEventSubDetails.text=[venueAddress objectAtIndex:indexPath.row];
+        lblEventSubDetails.text=[arrayToVenu objectAtIndex:indexPath.row];
         //cell.detailTextLabel.text = [arrayToDesc objectAtIndex:indexPath.row];
         
         UIFont *myFont = [ UIFont fontWithName: @"Arial" size: 10.0 ];
@@ -346,11 +529,91 @@
         lblEventSubDetails.textAlignment = 0;
         [cell addSubview:lblEventSubDetails];
         
+        NSLog(@"%@",eventType);
+        
+        
+        
+        for (int valEvent=0; valEvent<[arrayToEvents count]; valEvent++) {
+            
+            NSMutableString *str = [eventType objectAtIndex:valEvent];
+            
+            if ([str isEqualToString:@"Music"]) {
+                
+             
+                NSLog(@"%u",[eventType count]);
+                
+                
+                UIImageView *image = [[UIImageView alloc]initWithFrame:CGRectMake(2,0,30,30)];
+                
+                image.image=[UIImage imageNamed:@"Orange-List_Music.png"];
+               
+                cell.imageView.image = image.image;
+                
+                
+            }
+            
+            
+            else if([str isEqualToString:@"Special Event"]) {
+                
+              NSLog(@"%@",[eventType objectAtIndex:indexPath.row]);
+                
+                
+            }
+            
+            else if([str isEqualToString:@"Sports"]) {
+                
+             NSLog(@"%@",[eventType objectAtIndex:indexPath.row]);
+                
+                
+            }
+            
+            else if([str isEqualToString:@"Comedy"]) {
+                
+                NSLog(@"%@",[eventType objectAtIndex:indexPath.row]);
+                
+                
+            }
+
+            
+        }
+        
     }
+    
+    UIImage *image = [UIImage imageNamed:@"blue_arrow.png"];
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    CGRect frame = CGRectMake(0.0, 0.0, 20, 20);
+    button.frame = frame;   // match the button's size with the image size
+    
+    //[button setBackgroundImage:image forState:UIControlStateNormal];
+    [button setImage:image forState:UIControlStateNormal];
+    // set the button's target to this table view controller so we can interpret touch events and map that to a NSIndexSet
+    [button addTarget:self action:@selector(checkButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+    button.backgroundColor = [UIColor clearColor];
+    cell.accessoryView = button;
+
     
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     
     return cell;
+}
+
+-(void)checkButtonTapped:(id)sender{
+    
+    UITableViewCell *cell = ((UITableViewCell *)[sender superview]);
+   
+    NSIndexPath *indexPath = [tblMyEvents indexPathForCell:cell];
+   
+    NSLog(@"INDEX %@",indexPath);
+    
+    NSString *stri = [description objectAtIndex:indexPath.row];
+    
+    EventsDetail *takeImage=[[EventsDetail alloc]init];
+    
+    takeImage.desc = stri;
+    
+    [[self navigationController]pushViewController:takeImage animated:YES];
+    
 }
 
 -(UIImage*)displayImage:(NSString *)imageUrl

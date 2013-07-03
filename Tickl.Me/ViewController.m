@@ -51,8 +51,41 @@
 
 - (IBAction)clickWhyFacebook:(id)sender
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Why Facebook?" message:@"We can use information from your Facebook account to make tickl.me better. We don't share your data." delegate:self cancelButtonTitle:nil otherButtonTitles:@"Got it!", nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Why Facebook?" message:@"We can use information from your Facebook account to make tickl.me better. We don't share your data." delegate:self cancelButtonTitle:nil otherButtonTitles:@"", nil];
+   
+       
+//    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, alert.frame.size.height, alert.frame.size.width)];
+//    
+//    NSString *path = [[NSString alloc] initWithString:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"black_bg.png"]];
+//    UIImage *bkgImg = [[UIImage alloc] initWithContentsOfFile:path];
+//    [imageView setImage:bkgImg];
+//   
+//    
+//    [alert addSubview:imageView];
+//    
+//    for (UIView *view in [alert subviews])
+//    {
+//        if ([view isKindOfClass:[UIButton class]])
+//        {
+//            [view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"got_it.png"]]];
+//        }
+//    }
+//   
+    
     [alert show];
+    
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+    [super viewWillAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+    [super viewWillDisappear:animated];
 }
 
 - (IBAction)clickLogInWithEmail:(id)sender

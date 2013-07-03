@@ -67,7 +67,7 @@
 
 @implementation FGalleryViewController
 @synthesize galleryID;
-@synthesize photoSource = _photoSource;
+@synthesize photoSource;
 @synthesize currentIndex = _currentIndex;
 @synthesize thumbsView = _thumbsView;
 @synthesize toolBar = _toolbar;
@@ -255,28 +255,7 @@
 
 - (void)viewDidUnload {
     
-    [self destroyViews];
-    
-    [_barItems release],
-    _barItems = nil;
-    [_nextButton release],
-    _nextButton = nil;
-    [_prevButton release],
-    _prevButton = nil;
-    [_container release],
-    _container = nil;
-    [_innerContainer release],
-    _innerContainer = nil;
-    [_scroller release],
-    _scroller = nil;
-    [_thumbsView release],
-    _thumbsView = nil;
-    [_toolbar release],
-    _toolbar = nil;
-    [_captionContainer release],
-    _captionContainer = nil;
-    [_caption release], _caption = nil;
-    
+       
     [super viewDidUnload];
 }
 
@@ -493,14 +472,14 @@
 - (void)setUseThumbnailView:(BOOL)useThumbnailView
 {
     
-    UIBarButtonItem *newBackButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(handleSeeAllTouch:)]autorelease];
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(handleSeeAllTouch:)];
     [[self navigationItem] setBackBarButtonItem: newBackButton];
-    [newBackButton release];
+    //[newBackButton release];
     
     _useThumbnailView = useThumbnailView;
     if( self.navigationController ) {
         if (_useThumbnailView) {
-          UIBarButtonItem *btn = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(handleSeeAllTouch:)]autorelease];
+          UIBarButtonItem *btn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(handleSeeAllTouch:)];
             [self.navigationItem setRightBarButtonItem:btn animated:YES];
             
         }
@@ -753,7 +732,7 @@
 		photoView.photoDelegate = self;
 		[_scroller addSubview:photoView];
 		[_photoViews addObject:photoView];
-		[photoView release];
+		//[photoView release];
 	}
 }
 
@@ -769,7 +748,7 @@
 		[thumbView setTag:i];
 		[_thumbsView addSubview:thumbView];
 		[_photoThumbnailViews addObject:thumbView];
-		[thumbView release];
+		//[thumbView release];
 	}
 }
 
@@ -1022,13 +1001,13 @@
 	{
 		thumbPath = [_photoSource photoGallery:self filePathForPhotoSize:FGalleryPhotoSizeThumbnail atIndex:index];
 		fullsizePath = [_photoSource photoGallery:self filePathForPhotoSize:FGalleryPhotoSizeFullsize atIndex:index];
-		photo = [[[FGalleryPhoto alloc] initWithThumbnailPath:thumbPath fullsizePath:fullsizePath delegate:self] autorelease];
+		photo = [[FGalleryPhoto alloc] initWithThumbnailPath:thumbPath fullsizePath:fullsizePath delegate:self];
 	}
 	else if( sourceType == FGalleryPhotoSourceTypeNetwork )
 	{
 		thumbPath = [_photoSource photoGallery:self urlForPhotoSize:FGalleryPhotoSizeThumbnail atIndex:index];
 		fullsizePath = [_photoSource photoGallery:self urlForPhotoSize:FGalleryPhotoSizeFullsize atIndex:index];
-		photo = [[[FGalleryPhoto alloc] initWithThumbnailUrl:thumbPath fullsizeUrl:fullsizePath delegate:self] autorelease];
+		photo = [[FGalleryPhoto alloc] initWithThumbnailUrl:thumbPath fullsizeUrl:fullsizePath delegate:self];
 	}
 	else 
 	{
@@ -1199,72 +1178,6 @@
 }
 
 
-- (void)dealloc {
-	
-	// remove KVO listener
-	[_container removeObserver:self forKeyPath:@"frame"];
-	
-	// Cancel all photo loaders in progress
-	NSArray *keys = [_photoLoaders allKeys];
-	NSUInteger i, count = [keys count];
-	for (i = 0; i < count; i++) {
-		FGalleryPhoto *photo = [_photoLoaders objectForKey:[keys objectAtIndex:i]];
-		photo.delegate = nil;
-		[photo unloadThumbnail];
-		[photo unloadFullsize];
-	}
-	
-	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-	
-	self.galleryID = nil;
-	
-	_photoSource = nil;
-	
-    [_caption release];
-    _caption = nil;
-	
-    [_captionContainer release];
-    _captionContainer = nil;
-	
-    [_container release];
-    _container = nil;
-	
-    [_innerContainer release];
-    _innerContainer = nil;
-	
-    [_toolbar release];
-    _toolbar = nil;
-	
-    [_thumbsView release];
-    _thumbsView = nil;
-	
-    [_scroller release];
-    _scroller = nil;
-	
-	[_photoLoaders removeAllObjects];
-    [_photoLoaders release];
-    _photoLoaders = nil;
-	
-	[_barItems removeAllObjects];
-	[_barItems release];
-	_barItems = nil;
-	
-	[_photoThumbnailViews removeAllObjects];
-    [_photoThumbnailViews release];
-    _photoThumbnailViews = nil;
-	
-	[_photoViews removeAllObjects];
-    [_photoViews release];
-    _photoViews = nil;
-	
-//    [_nextButton release];
-//    _nextButton = nil;
-//	
-//    [_prevButton release]; 
-//    _prevButton = nil;
-	
-      [super dealloc];
-}
 
 
 @end

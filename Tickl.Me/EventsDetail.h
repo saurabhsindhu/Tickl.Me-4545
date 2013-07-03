@@ -16,6 +16,7 @@
     NSMutableArray *eventsDescription;
     NSString *xX;
     NSString *yY;
+    NSString *desc;
     
 }
 
@@ -24,6 +25,7 @@
 @property(nonatomic,retain)NSMutableArray *eventsDescription;
 @property(nonatomic,retain)NSString *xX;
 @property(nonatomic,retain)NSString *yY;
+@property(nonatomic,retain)NSString *desc;
 
 -(IBAction)checkIn:(id)sender;
 

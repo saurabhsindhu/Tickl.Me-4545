@@ -113,11 +113,12 @@
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	static NSString *CellIdentifier = @"Cell";
     
-    UITableViewCell *cell =nil;// [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+   	static NSString *CellIdentifier = @"Cell";
+    
+    UITableViewCell *cell =[tableSubCategories dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc]init];
     }
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -144,6 +145,21 @@
     else if(cell.accessoryType==UITableViewCellAccessoryNone){
          [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
         
+        NSString *destPath1 = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+        
+        destPath1 = [destPath1 stringByAppendingPathComponent:@"userName.plist"];
+        
+        NSLog(@"tft%@",destPath1);
+        
+        
+        NSDictionary *dictValue1 = [[NSDictionary alloc]
+                                    initWithContentsOfFile:destPath1];
+        
+        NSString *user_id = [dictValue1 objectForKey:@"userName"];
+        
+        NSLog(@"tft%@",user_id);
+
+        
         
         [arr addObject:[insertUID objectAtIndex:indexPath.row]];
        // NSLog(@"Inserted UID%@",arr);
@@ -163,7 +179,7 @@
         //NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:kNilOptions error:&error];
         
               
-        NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"http://108.168.203.226:8123/events/get_event_data"]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"http://108.168.203.226:8123/filters/save_filters"]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
 //        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
 //        //[request setPostValue:[arr JSONRepresentation] forKey:@"id"];
 //        [request setPostValue:dict forKey:@"id"];
@@ -171,9 +187,10 @@
 //        [request setDelegate:self];
 //        [request startAsynchronous];
         
+        NSArray *arrayValue = [[NSArray alloc]init];
+        
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:url];
-        NSDictionary* postDict = [NSDictionary dictionaryWithObjectsAndKeys:array,@"id",nil];
-       // NSDictionary* data = [NSDictionary dictionaryWithObject:postDict forKey:@"id"];
+        NSDictionary* postDict = [NSDictionary dictionaryWithObjectsAndKeys:array,@"category_id",user_id,@"user_id",arrayValue,@"vulture_id",nil];
         NSString* jsonData = [postDict JSONRepresentation];
         NSData* postData = [jsonData dataUsingEncoding:NSUTF8StringEncoding];
         [request appendPostData:postData];
@@ -212,24 +229,27 @@
    // NSLog(@"requestFinished%@",request);
     
     NSString *responseString=[[request responseString]stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSLog(@"Response %@",responseString);
+    
+
    // NSLog(@"Response %@",responseString);
     
-    NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-    destPath = [destPath stringByAppendingPathComponent:@"filter.plist"];
-    
-    // If the file doesn't exist in the Documents Folder, copy it.
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    if (![fileManager fileExistsAtPath:destPath]) {
-        NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"filter" ofType:@"plist"];
-        [fileManager copyItemAtPath:sourcePath toPath:destPath error:nil];
-    }
-    
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc]init];
-    
-    [dict setObject:responseString forKey:@"Filter"];
-    
-    [dict writeToFile:destPath atomically:YES];
+//    NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+//    destPath = [destPath stringByAppendingPathComponent:@"filter.plist"];
+//    
+//    // If the file doesn't exist in the Documents Folder, copy it.
+//    NSFileManager *fileManager = [NSFileManager defaultManager];
+//    
+//    if (![fileManager fileExistsAtPath:destPath]) {
+//        NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"filter" ofType:@"plist"];
+//        [fileManager copyItemAtPath:sourcePath toPath:destPath error:nil];
+//    }
+//    
+//    NSMutableDictionary *dict = [[NSMutableDictionary alloc]init];
+//    
+//    [dict setObject:responseString forKey:@"Filter"];
+//    
+//    [dict writeToFile:destPath atomically:YES];
     
         
 }
