@@ -29,6 +29,7 @@
 #import "JSON.h"
 #import "ViewController.h"
 #import "FacebookManager.h"
+#import "ViewFriendListViewController.h"
 
 
 
@@ -168,7 +169,7 @@
     }
     else if (indexPath.row == 5)
     {//Friends
-        MyFriends_ViewController *find = [[MyFriends_ViewController alloc] init];
+        ViewFriendListViewController *find = [[ViewFriendListViewController alloc] init];
         navController = [[UINavigationController alloc] initWithRootViewController:find];
     }
     else if (indexPath.row == 6)

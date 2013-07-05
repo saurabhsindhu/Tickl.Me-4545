@@ -152,8 +152,19 @@ static NSString* kAppId = @"446436425445989";
     }
 
     
+    NSLog(@"Registering for push notifications...");
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+     (UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+    
     return YES;
 }
+
+- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    NSString *str = [NSString stringWithFormat:@"Device Token=%@",deviceToken];
+    NSLog(@"%@", str);
+}
+
+
 #pragma Methods for compressssss the image
 +(UIImage*)compressImage:(UIImage*)sourceImage scaledToSize:(CGSize)newSize
 {
@@ -202,13 +213,16 @@ static NSString* kAppId = @"446436425445989";
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
-//- (void)gotoMainView
-//{
-//    self.window.rootViewController = self.vcMain;
-//    CATransition *transition = [[[CATransition alloc] init] autorelease];
-//    [transition setDuration:0.4];
-//    [transition setType:kCATransitionFade];
-//    [self.window.layer addAnimation:transition forKey:@"transition"];
-//}
-
 @end
+
+@implementation UINavigationBar (UINavigationBarCategory)
+
+- (void)drawRect:(CGRect)rect {
+    UIImage *img = [UIImage imageNamed:@"t_bar.png"];
+    [img drawInRect:rect];
+}
+@end
+
+
+
+

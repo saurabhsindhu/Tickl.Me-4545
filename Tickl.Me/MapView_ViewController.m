@@ -15,6 +15,10 @@
 #import "SFAnnotation.h"
 #import "EventsDetail.h"
 #import "annotationsController.h"
+#import "JSON.h"
+#import "ASIHTTPRequest.h"
+
+static int count = 1;
 
 typedef enum AnnotationIndex : NSUInteger
 {
@@ -60,25 +64,24 @@ typedef enum AnnotationIndex : NSUInteger
     
     annotationsarray=[[NSMutableArray alloc] init];
     
-    NSLog(@"%d",[lat count]);
-    NSLog(@"%d",[lon count]);
+    NSLog(@"%d",[latitude count]);
+    NSLog(@"%d",[longitude count]);
     NSLog(@"%d",[listOfPlaceName count]);
     
     
     /////// iterate here
-    for (int i =0;i < [lat count]; i++) {
+    for (int i =0;i < [latitude count]; i++) {
         MKCoordinateRegion region =  { {0.0, 0.0 }, { 0.0, 0.0 } };
-        region.center.latitude = [[lat objectAtIndex:i] floatValue];
-        region.center.longitude = [[lon objectAtIndex:i] floatValue];
-        region.span.longitudeDelta = 5.0f;
-        region.span.latitudeDelta = 5.0f;
+        region.center.latitude = [[latitude objectAtIndex:i] floatValue];
+        region.center.longitude = [[longitude objectAtIndex:i] floatValue];
+        region.span.longitudeDelta = 0.1f;
+        region.span.latitudeDelta = 0.1f;
         [self.mapView setRegion:region animated:YES];
         [self.mapView setZoomEnabled:YES];
-        ml = [[MyLocation alloc]initWithName:[NSString stringWithFormat:@"%@",[listOfPlaceName objectAtIndex:i]] address:[NSString stringWithFormat:@"%@",[listOfAddress objectAtIndex:i]] coordinate:region.center];
-        
+             
+        ml = [[MyLocation alloc]initWithName:[NSString stringWithFormat:@"%@",[arrayToVenu objectAtIndex:i]]  address:[NSString stringWithFormat:@"%@",[venueAddress objectAtIndex:i]] venuAddress:[NSString stringWithFormat:@"%@",[arrayToVenu objectAtIndex:i]] timeValue:[NSString stringWithFormat:@"%@",[timeHr objectAtIndex:i]] ticket:[NSString stringWithFormat:@"%@",[prices objectAtIndex:i]] coordinate:region.center];
 //        ml.description = [NSString stringWithFormat:@"%@",[listOfDesc objectAtIndex:i]];
-//        
-//        NSLog(@"DESCR...%@",ml.description);
+
         
         ml.nTag = i;
         
@@ -122,30 +125,36 @@ typedef enum AnnotationIndex : NSUInteger
     annImages = [[NSMutableArray alloc]initWithObjects:@"Blue-Pin_Added-a-Friend.png",@"Blue-Pin_Added-to-My-Calendar.png",@"Blue-Pin_Art.png",@"Blue-Pin_Comedy.png",@"Blue-Pin_Dance.png",@"Blue-Pin_Event-Categories.png",@"Blue-Pin_Event-Check-in.png",@"Blue-Pin_Family-Friendly.png",@"Blue-Pin_Favorites.png",nil];
 
     
-   // NSLog(@"Latitude %@ Longitude %@",lat,lon);
-    
 
     self.view.frame=CGRectMake(0, 0, 320, 480);
     self.title=@"Map View";
     
-    UIBarButtonItem *rightBarButton =[[UIBarButtonItem alloc] initWithTitle:@"List" style:UIBarButtonItemStyleDone target:self action:@selector(listViewButtonClicked:)];
+    [self getArrayLists];
+    
+    UIButton *customMenuBtn1 = [UIButton buttonWithType:UIButtonTypeCustom];
+    customMenuBtn1.frame = CGRectMake(10, 7.5, 30, 30);
+    [customMenuBtn1 addTarget:self action:@selector(listViewButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [customMenuBtn1 setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [customMenuBtn1 setImage:[UIImage imageNamed:@"Done.png"] forState:UIControlStateNormal];
+    
+    UIBarButtonItem *rightBarButton =[[UIBarButtonItem alloc]initWithCustomView:customMenuBtn1];
     self.navigationItem.rightBarButtonItem = rightBarButton;
    
     UIButton *customMenuBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     customMenuBtn.frame = CGRectMake(10, 7.5, 30, 30);
     [customMenuBtn addTarget:self action:@selector(clickMenu) forControlEvents:UIControlEventTouchUpInside];
     [customMenuBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [customMenuBtn setImage:[UIImage imageNamed:@"nav_menu_icon.png"] forState:UIControlStateNormal];
+    [customMenuBtn setImage:[UIImage imageNamed:@"menu.png"] forState:UIControlStateNormal];
     
     UIBarButtonItem *leftBarButton =[[UIBarButtonItem alloc] initWithCustomView:customMenuBtn];
     self.navigationItem.leftBarButtonItem = leftBarButton;
     // create out annotations array (in this example only 3)
-    self.mapAnnotations = [[NSMutableArray alloc] initWithCapacity:2];
+    self.mapAnnotations = [[NSMutableArray alloc] initWithCapacity:5];
     
     // annotation for the City of San Francisco
     
-    SFAnnotation *sfAnnotation = [[SFAnnotation alloc] init];
-    [self.mapAnnotations insertObject:sfAnnotation atIndex:kCityAnnotationIndex];
+//    SFAnnotation *sfAnnotation = [[SFAnnotation alloc] init];
+//    [self.mapAnnotations insertObject:sfAnnotation atIndex:kCityAnnotationIndex];
     
     //CLLocationController comes here...
     
@@ -157,12 +166,309 @@ typedef enum AnnotationIndex : NSUInteger
 }
 
 
-- (IBAction)clickMore:(id)sender {
+-(void)getArrayLists{
+    
+    //url values
+    
+    arrayToEvents = [[NSMutableArray alloc]init];
+    
+    arrayToDesc = [[NSMutableArray alloc]init];
+    
+    arrayToVenu = [[NSMutableArray alloc]init];
+    
+    thmbImage = [[NSMutableArray alloc]init];
+    
+    eventShedule = [[NSMutableArray alloc]init];
+    
+    eventType = [[NSMutableArray alloc]init];
+    
+    longitude = [[NSMutableArray alloc]init];
+    
+    latitude = [[NSMutableArray alloc]init];
+    
+    venueAddress = [[NSMutableArray alloc]init];
+    
+    description = [[NSMutableArray alloc]init];
+    
+    locationValue = [[NSMutableArray alloc]init];
+    
+    timeHr = [[NSMutableArray alloc]init];
+    
+    cellImage = [[NSMutableArray alloc]init];
+    
+    prices = [[NSMutableArray alloc]init];
+    
+    //***********************JSON Value******************************//
+    
+    SBJSON *parser = [[SBJSON alloc]init];
+    
+       
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://108.168.203.226:8123/events/get_favorites_filter"]];
+    
+    // Perform request and get JSON back as a NSData object
+    NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+    
+    // Get JSON as a NSString from NSData response
+    NSString *json_string = [[NSString alloc] initWithData:response encoding:NSUTF8StringEncoding];
+    
+    // parse the JSON response into an object
+    // Here we're using NSArray since we're parsing an array of JSON status objects
+    statuses = [parser objectWithString:json_string error:nil];
+    
+  
+    // represented as a NSDictionary
+    for (NSDictionary *status in statuses) {
+        // You can retrieve individual values using objectForKey on the status NSDictionary
+        
+        [arrayToEvents addObject:[[status objectForKey:@"Event"]objectForKey:@"event_name"]];
+        
+        [prices addObject:[[status objectForKey:@"Event"]objectForKey:@"prices"]];
+        
+        [arrayToVenu addObject:[[status objectForKey:@"Venue"]objectForKey:@"venue_name"]];
+        
+        
+        [eventShedule addObject:[[status objectForKey:@"EventSchedule"]objectForKey:@"start_time"]];
+        
+        [eventType addObject:[[status objectForKey:@"Event"]objectForKey:@"event_type"]];
+        
+        [longitude addObject:[[status objectForKey:@"Venue"]objectForKey:@"lon"]];
+        
+        [latitude addObject:[[status objectForKey:@"Venue"]objectForKey:@"lat"]];
+        
+        [venueAddress addObject:[[status objectForKey:@"Venue"]objectForKey:@"address"]];
+        
+        [description addObject:[[status objectForKey:@"Performer"]objectForKey:@"description"]];
+        
+        
+        
+    }
+    
+    
+    for (int valTime = 0; valTime<[arrayToEvents count]; valTime++) {
+        
+        
+        NSArray *subString = [[eventShedule objectAtIndex:valTime] componentsSeparatedByString:@" "];
+        
+        NSString *thirdValue1 = [subString objectAtIndex:1];
+        
+        
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateFormat = @"HH:mm:ss";
+        NSDate *date = [dateFormatter dateFromString:thirdValue1];
+        
+        dateFormatter.dateFormat = @"hh:mm:ss a";
+        NSString *pmamDateString = [dateFormatter stringFromDate:date];
+        
+        NSLog(@"%@",pmamDateString);
+        
+        [timeHr addObject:pmamDateString];
+        
+        
+    }
+    
+  
     
     
 }
 
+
+- (IBAction)clickMore:(id)sender {
+    
+    count++;
+    
+    NSMutableString *requestString1 = [NSString stringWithFormat:@"http://108.168.203.226:8123/events/get_favorites_filter/page:%d", count];
+    
+
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:requestString1]];
+    
+    [request setHTTPMethod:@"POST"];
+
+    
+    [request setValue:@"application/json"
+   forHTTPHeaderField:@"content-type"];
+    NSURLResponse *response = nil;
+    NSError *error = nil;
+    
+    NSData *responseData  = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    
+    request = nil;
+    
+    NSString *responseString = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+    
+    NSString *string = [responseString stringByReplacingOccurrencesOfString:@"\\" withString:@""];
+    
+    
+    string = [string stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
+    string = [string stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
+    string = [string stringByReplacingOccurrencesOfString:@"\"[" withString:@"["];
+    string = [string stringByReplacingOccurrencesOfString:@"]\"" withString:@"]"];
+    
+    NSDictionary *responseDict = (NSDictionary *)[string JSONValue];
+    
+    NSLog(@"%@",responseDict);
+    
+    //***********************JSON Value******************************//
+    
+    SBJSON *parser = [[SBJSON alloc]init];
+    
+    
+       // Here we're using NSArray since we're parsing an array of JSON status objects
+    statuses = [parser objectWithString:string error:nil];
+    
+    
+    // represented as a NSDictionary
+    for (NSDictionary *status in statuses) {
+        // You can retrieve individual values using objectForKey on the status NSDictionary
+        
+        [arrayToEvents addObject:[[status objectForKey:@"Event"]objectForKey:@"event_name"]];
+        
+        [prices addObject:[[status objectForKey:@"Event"]objectForKey:@"prices"]];
+        
+        [arrayToVenu addObject:[[status objectForKey:@"Venue"]objectForKey:@"venue_name"]];
+        
+        
+        [eventShedule addObject:[[status objectForKey:@"EventSchedule"]objectForKey:@"start_time"]];
+        
+        [eventType addObject:[[status objectForKey:@"Event"]objectForKey:@"event_type"]];
+        
+        [longitude addObject:[[status objectForKey:@"Venue"]objectForKey:@"lon"]];
+        
+        [latitude addObject:[[status objectForKey:@"Venue"]objectForKey:@"lat"]];
+        
+        [venueAddress addObject:[[status objectForKey:@"Venue"]objectForKey:@"address"]];
+        
+        [description addObject:[[status objectForKey:@"Performer"]objectForKey:@"description"]];
+        
+        
+        
+    }
+    
+    
+    
+    
+    for (int valTime = 0; valTime<[arrayToEvents count]; valTime++) {
+        
+        
+        NSArray *subString = [[eventShedule objectAtIndex:valTime] componentsSeparatedByString:@" "];
+        
+        NSString *thirdValue1 = [subString objectAtIndex:1];
+        
+        
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateFormat = @"HH:mm:ss";
+        NSDate *date = [dateFormatter dateFromString:thirdValue1];
+        
+        dateFormatter.dateFormat = @"hh:mm:ss a";
+        NSString *pmamDateString = [dateFormatter stringFromDate:date];
+        
+        NSLog(@"%@",pmamDateString);
+        
+        [timeHr addObject:pmamDateString];
+        
+        
+    }
+    
+ 
+    [self gotoLocation];
+    
+}
+
+#pragma mark ASIHTTPReq Delegate
+- (void)requestStarted:(ASIHTTPRequest *)request{
+    
+    NSLog(@"requestStarted%@",request);
+    
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+    
+    NSLog(@"requestFinished%@",request);
+    
+    NSString *responseString=[[request responseString]stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSLog(@"Response %@",responseString);
+    
+    
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request{
+    
+    NSLog(@"requestFailed%@",request);
+    
+}
+
+
 - (IBAction)clickLess:(id)sender {
+    
+    count--;
+    
+    
+    NSLog(@"%u",[arrayToEvents count]);
+    
+    int indexVal = [arrayToEvents count];
+    
+    int intDiff = indexVal - 3;
+    
+    if (intDiff > 9){
+    
+        
+           // You can retrieve individual values using objectForKey on the status NSDictionary
+        
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(intDiff, 3)];
+        
+        [arrayToEvents removeObjectsAtIndexes:indexSet];
+        
+        [prices removeObjectsAtIndexes:indexSet];
+        
+        [arrayToVenu removeObjectsAtIndexes:indexSet];
+        
+        
+        [eventShedule removeObjectsAtIndexes:indexSet];
+        
+        [eventType removeObjectsAtIndexes:indexSet];
+        
+        [longitude removeObjectsAtIndexes:indexSet];
+        
+        [latitude removeObjectsAtIndexes:indexSet];
+        
+        [venueAddress removeObjectsAtIndexes:indexSet];
+        
+        [description removeObjectsAtIndexes:indexSet];
+        
+        
+        
+ 
+    
+    NSLog(@"%@",eventType);
+    
+    
+    for (int valTime = 0; valTime<[arrayToEvents count]; valTime++) {
+        
+        
+        NSArray *subString = [[eventShedule objectAtIndex:valTime] componentsSeparatedByString:@" "];
+        
+        NSString *thirdValue1 = [subString objectAtIndex:1];
+        
+        
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateFormat = @"HH:mm:ss";
+        NSDate *date = [dateFormatter dateFromString:thirdValue1];
+        
+        dateFormatter.dateFormat = @"hh:mm:ss a";
+        NSString *pmamDateString = [dateFormatter stringFromDate:date];
+        
+        NSLog(@"%@",pmamDateString);
+        
+        [timeHr addObject:pmamDateString];
+        
+        
+    }
+    
+    
+    [self gotoLocation];
+
+    }
+    
 }
 
 - (IBAction)clickFilters:(id)sender {
@@ -197,13 +503,7 @@ typedef enum AnnotationIndex : NSUInteger
 //
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
-    // here we illustrate how to detect which annotation type was clicked on for its callout
-//    id <MKAnnotation> annotation = [view annotation];
-//    if ([annotation isKindOfClass:[BridgeAnnotation class]])
-//    {
-//        NSLog(@"clicked Golden Gate Bridge annotation");
-//    }
-
+   
     EventsDetail *eventDet = [[EventsDetail alloc]initWithNibName:@"EventsDetail" bundle:nil];
     
     eventDet.xX = [NSString stringWithFormat:@"%@",[lat objectAtIndex:ml.nTag]];
@@ -231,6 +531,7 @@ typedef enum AnnotationIndex : NSUInteger
         
         [mapView setRegion:mapRegion animated:YES];
         
+              
         [mapView addAnnotation:[[annotationsController alloc] initWithTitle:@"This is me" subtitle:@"Current Loc" coordinate:location.coordinate]];
         if ([annotationsArray count] > 0) {
             [mapView removeAnnotations:annotationsArray];
@@ -259,35 +560,92 @@ typedef enum AnnotationIndex : NSUInteger
         annotationView.enabled = YES;
         annotationView.canShowCallout = YES;
         
-        NSString *strCat = [NSString stringWithFormat:@"%@",listOfCat];
+        annotationView.image = [UIImage imageNamed:[NSString stringWithFormat:@"13-07-02_tickme_51.png"]];
         
-        //NSLog(@"<Category>%@",strCat);
-
         
-        if (ml.nTag==0||ml.nTag==2||ml.nTag==3) {
+        
+        
+        //array set for images
+        
+        for (int valEvent=0; valEvent<[arrayToEvents count]; valEvent++) {
             
-            annotationView.image=[UIImage imageNamed:@"Orange-Pin_Music.png"];
+            NSMutableString *str = [eventType objectAtIndex:valEvent];
+            
+            if ([str isEqualToString:@"Music"]) {
+                
+                
+               // NSLog(@"%i",valEvent);
+                
+                
+                annotationView.image=[UIImage imageNamed:@"Blue-Pin_Music.png"];
+                
+                
+            }
+            
+            
+            else if([str isEqualToString:@"Special Event"]) {
+                
+                annotationView.image=[UIImage imageNamed:@"Blue-Pin_Special-Events.png"];
+                
+                    
+            }
+            
+            else if([str isEqualToString:@"Sports"]) {
+                
+                
+                annotationView.image=[UIImage imageNamed:@"Blue-Pin_Sports.png"];
+                
+                         
+            }
+            
+            else if([str isEqualToString:@"Comedy"]) {
+                
+                annotationView.image=[UIImage imageNamed:@"Blue-Pin_Comedy.png"];
+                          
+            }
+            
+            else if([str isEqualToString:@"Art"]) {
+                
+                annotationView.image=[UIImage imageNamed:@"Blue-Pin_Art.png"];
+                        
+            }
+            
+            else if([str isEqualToString:@"Dance"]) {
+                
+              annotationView.image=[UIImage imageNamed:@"Blue-Pin_Dance.png"];  
+                           
+            }
+            
+            else if([str isEqualToString:@"Theater"]) {
+                
+                 annotationView.image=[UIImage imageNamed:@"Blue-Pin_Theater.png"];  
+                
+                
+            }
+            
             
         }
-        if (ml.nTag==4||ml.nTag==11||ml.nTag==16){
-            
-            annotationView.image=[UIImage imageNamed:@"Ornage-Pin_Art.png"];//here we use a nice image instead of the default pins
-            }
         
-        if (ml.nTag==5||ml.nTag==7||ml.nTag==8||ml.nTag==9||ml.nTag==10||ml.nTag==12||ml.nTag==14||ml.nTag==15){
-            
-            annotationView.image=[UIImage imageNamed:@"Orange-Pin_Special-Events.png"];//here we use a nice image instead of the default pins
-            }
         
-        if (ml.nTag==6||ml.nTag==13){
-            
-            annotationView.image=[UIImage imageNamed:@"Orange-Pin_Sports.png"];//here we use a nice image instead of the default pins
-            }
+        UIImage *image = [UIImage imageNamed:@"blue_arrow.png"];
         
-                
-        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-        [rightButton addTarget:nil action:nil forControlEvents:UIControlEventTouchUpInside];
-        annotationView.rightCalloutAccessoryView = rightButton;
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        CGRect frame = CGRectMake(0.0, 0.0, 20, 20);
+        button.frame = frame;   // match the button's size with the image size
+        
+        //[button setBackgroundImage:image forState:UIControlStateNormal];
+        [button setImage:image forState:UIControlStateNormal];
+        // set the button's target to this table view controller so we can interpret touch events and map that to a NSIndexSet
+        [button addTarget:self action:@selector(checkButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        button.backgroundColor = [UIColor clearColor];
+        annotationView.rightCalloutAccessoryView = button;
+
+
+//       
+//        
+//        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+//        [rightButton addTarget:nil action:nil forControlEvents:UIControlEventTouchUpInside];
+        
 
         
            return annotationView;
@@ -297,6 +655,23 @@ typedef enum AnnotationIndex : NSUInteger
     return nil;    
 }
 
+-(void)checkButtonTapped:(id)sender{
+    
+//    UITableViewCell *cell = ((UITableViewCell *)[sender superview]);
+//    
+//    NSIndexPath *indexPath = [tblMyEvents indexPathForCell:cell];
+//    
+//    NSLog(@"INDEX %@",indexPath);
+//    
+//    NSString *stri = [description objectAtIndex:indexPath.row];
+    
+    EventsDetail *takeImage=[[EventsDetail alloc]init];
+    
+   // takeImage.desc = stri;
+    
+    [[self navigationController]pushViewController:takeImage animated:YES];
+    
+}
 
 
 

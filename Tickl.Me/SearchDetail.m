@@ -43,8 +43,8 @@ int Xcoord,Ycoord;
     [super viewDidLoad];
     
     
-    EKEventStore *store = [[EKEventStore alloc] init];
-            
+//    EKEventStore *store = [[EKEventStore alloc] init];
+    
        
     scroll.frame = CGRectMake(0, 0, 320, 460);
     [scroll setContentSize:CGSizeMake(320, 880)];
@@ -77,12 +77,7 @@ int Xcoord,Ycoord;
     lblEventTime.text=venue_name;
    [scroll addSubview:lblEventTime];
     
-  
-//    UILabel *lblAddress = [[UILabel alloc]initWithFrame :CGRectMake(Xcoord+90, Ycoord-70, 70, 170)];
-//    lblAddress.tag =17;
-//    lblAddress.textColor = [UIColor blackColor];
-//    lblAddress.text=address;
-//    [scroll addSubview:lblAddress];
+
     
     NSLog(@"%@",start_time);
     

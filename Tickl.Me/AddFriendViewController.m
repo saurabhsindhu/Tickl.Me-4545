@@ -246,7 +246,7 @@
             
             
             btnAddFriend.frame=CGRectMake(270, 5, 25, 25);
-            [btnAddFriend setImage:[UIImage imageNamed:@"imgAddFriend.png"] forState:UIControlStateNormal];
+            [btnAddFriend setImage:[UIImage imageNamed:@"add.png"] forState:UIControlStateNormal];
             [btnAddFriend addTarget:self action:@selector(sendInvitaionFormApp:) forControlEvents:UIControlEventTouchUpInside];
             [cell addSubview:btnAddFriend];
             
@@ -275,7 +275,7 @@
             [cell addSubview:NameLabel];
             
             btnAddFriend.frame=CGRectMake(270, 5, 25, 25);
-            [btnAddFriend setImage:[UIImage imageNamed:@"imgAddFriend.png"] forState:UIControlStateNormal];
+            [btnAddFriend setImage:[UIImage imageNamed:@"add.png"] forState:UIControlStateNormal];
             [btnAddFriend addTarget:self action:@selector(sendInvitaionFormApp2:) forControlEvents:UIControlEventTouchUpInside];
             [cell addSubview:btnAddFriend];
 
@@ -309,7 +309,7 @@
                         [cell addSubview:lblFriendEmailID];
             
                         btnAddFriend.frame=CGRectMake(270, 5, 25, 25);
-                        [btnAddFriend setImage:[UIImage imageNamed:@"imgAddFriend.png"] forState:UIControlStateNormal];
+                        [btnAddFriend setImage:[UIImage imageNamed:@"add.png"] forState:UIControlStateNormal];
                         //[btnAddFriend addTarget:self action:@selector(sendInvitaionFormApp) forControlEvents:UIControlEventTouchUpInside];
                         [cell addSubview:btnAddFriend];
             

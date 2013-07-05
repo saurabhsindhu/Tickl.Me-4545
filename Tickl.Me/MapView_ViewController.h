@@ -13,8 +13,9 @@
 #import "ConnectedClass.h"
 #import "annotationsController.h"
 #import "MyLocation.h"
+#import "ASIHTTPRequest.h"
 
-@interface MapView_ViewController : UIViewController <MKMapViewDelegate>//CoreLocationControllerDelegate
+@interface MapView_ViewController : UIViewController <MKMapViewDelegate,ASIHTTPRequestDelegate>//CoreLocationControllerDelegate
 {
     
     BOOL _doneInitialZoom;
@@ -31,6 +32,22 @@
     NSMutableArray *listOfPlaceName,*listOfLatitude,*listOfLongitude,*listOfCat,*listOfAddress,*listOfDesc;
     
     MyLocation *ml;
+    
+    NSMutableArray *arrTotalEvent;
+    NSMutableArray *statuses;
+    NSMutableArray *arrayToEvents;
+    NSMutableArray *arrayToDesc;
+    NSMutableArray *arrayToVenu;
+    NSMutableArray *thmbImage;
+    NSMutableArray *eventShedule;
+    NSMutableArray *eventType;
+    NSMutableArray *latitude,*longitude;
+    NSMutableArray *venueAddress;
+    NSMutableArray *description;
+    NSMutableArray *locationValue;
+    NSMutableArray *timeHr;
+    NSMutableArray *cellImage;
+    NSMutableArray *prices;
     
     
 

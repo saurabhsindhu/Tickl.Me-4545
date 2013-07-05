@@ -41,10 +41,11 @@
     customMenuBtn.frame = CGRectMake(10, 7.5, 30, 30);
     [customMenuBtn addTarget:self action:@selector(clickMenu) forControlEvents:UIControlEventTouchUpInside];
     [customMenuBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [customMenuBtn setImage:[UIImage imageNamed:@"nav_menu_icon.png"] forState:UIControlStateNormal];
+    [customMenuBtn setImage:[UIImage imageNamed:@"menu.png"] forState:UIControlStateNormal];
     
     UIBarButtonItem *leftBarButton =[[UIBarButtonItem alloc] initWithCustomView:customMenuBtn];
     self.navigationItem.leftBarButtonItem = leftBarButton;
+    
     
     arrtitleForHeader=[[NSMutableArray alloc]init];
     [arrtitleForHeader addObject:@"My Filters"];

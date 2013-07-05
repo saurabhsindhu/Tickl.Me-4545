@@ -30,6 +30,7 @@
     NSMutableArray *description;
     NSMutableArray *locationValue;
     NSMutableArray *minTime,*hourTime;
+    NSMutableArray *cellImage;
     
     AsyncImageView *asyncImageView;
     
@@ -41,6 +42,8 @@
     float currentLat;
     
     float currentLong;
+    
+    NSMutableArray *imagArray;
     
 }
 - (IBAction)btnBackClicked:(UIButton *)sender;

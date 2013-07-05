@@ -37,9 +37,24 @@
 {
    
     [super viewDidLoad];
+    
+//    
+//    UIImage *image = [UIImage imageNamed:@"top_bar.png"];
+//    UIImageView *imageViewe = [[UIImageView alloc] initWithImage:image];
+//    
+//      
+//    CGRect applicationFrame = CGRectMake(0, 0, 330, 46);
+//    UIView * newView = [[UIView alloc] initWithFrame:applicationFrame];
+//    [newView addSubview:imageViewe];
+//  
+//    
+//    
+//    [self.navigationController.navigationBar addSubview:newView];
+    
+    
    
     
-    NSMutableArray *imagArray = [[NSMutableArray alloc]initWithObjects:@"Blue-List_Added-a-Friend.png",@"Blue-List_Added-to-My-Calendar.png",@"Blue-List_Art.png",@"Blue-List_Comedy.png",@"Blue-List_Dance.png",@"Blue-List_Event-Categories.png",@"Blue-List_Event-Check-in.png",@"Blue-List_Family-Friendly.png",@"Blue-List_Favorites.png",@"Blue-List_Free-or-Cheap.png",@"Blue-List_High-Culture.png",@"Blue-List_Movies.png",@"Orange-List_Music.png",@"Blue-List_Odd-and-Offbeat.png",@"Blue-List_Once-in-a-Lifetime.png",@"Blue-List_People-Like-Me.png",@"Blue-List_scan-my-friends.png",@"Blue-List_Special-Events.png",@"Blue-List_Sports.png",@"Blue-List_Talks-and-Readings.png",@"Blue-List_Theater.png",@"Blue-List_Vultures.png",nil];
+    imagArray = [[NSMutableArray alloc]initWithObjects:@"Blue-List_Added-a-Friend.png",@"Blue-List_Added-to-My-Calendar.png",@"Blue-List_Art.png",@"Blue-List_Comedy.png",@"Blue-List_Dance.png",@"Blue-List_Event-Categories.png",@"Blue-List_Event-Check-in.png",@"Blue-List_Family-Friendly.png",@"Blue-List_Favorites.png",@"Blue-List_Free-or-Cheap.png",@"Blue-List_High-Culture.png",@"Blue-List_Movies.png",@"Orange-List_Music.png",@"Blue-List_Odd-and-Offbeat.png",@"Blue-List_Once-in-a-Lifetime.png",@"Blue-List_People-Like-Me.png",@"Blue-List_scan-my-friends.png",@"Blue-List_Special-Events.png",@"Blue-List_Sports.png",@"Blue-List_Talks-and-Readings.png",@"Blue-List_Theater.png",@"Blue-List_Vultures.png",nil];
     
     //current lat/long
     
@@ -107,6 +122,8 @@
     
     hourTime = [[NSMutableArray alloc]init];
     
+    cellImage = [[NSMutableArray alloc]init];
+    
     //***********************JSON Value******************************//
     
     SBJSON *parser = [[SBJSON alloc]init];
@@ -115,7 +132,7 @@
         
         //http://108.168.203.226:8123/events/get_list_events
         
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://108.168.203.226:8123/events/get_favorites_filter/page:1"]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://108.168.203.226:8123/events/get_favorites_filter"]];
         
         // Perform request and get JSON back as a NSData object
         NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
@@ -173,19 +190,13 @@
     //***************************************************************//
     
           
-        
-//        if ([[[eventType objectAtIndex:valEvent]valueForKey:@"Event"]valueForKey:@"event_type"]==@"Special Event"){
-//          
-//            NSLog(@"HI");
-//            
-//        }
   
     
     UIButton *customMenuBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     customMenuBtn.frame = CGRectMake(10, 7.5, 30, 30);
     [customMenuBtn addTarget:self action:@selector(backBtnClicked) forControlEvents:UIControlEventTouchUpInside];
     [customMenuBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [customMenuBtn setImage:[UIImage imageNamed:@"nav_menu_icon.png"] forState:UIControlStateNormal];
+    [customMenuBtn setImage:[UIImage imageNamed:@"menu.png"] forState:UIControlStateNormal];
     
     UIBarButtonItem *leftBarButton =[[UIBarButtonItem alloc] initWithCustomView:customMenuBtn];
     self.navigationItem.leftBarButtonItem = leftBarButton;
@@ -195,7 +206,7 @@
     UIButton *customMapBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     customMapBtn.frame = CGRectMake(300, 7.5, 30, 30);
     [customMapBtn addTarget:self action:@selector(mapButtonClk) forControlEvents:UIControlEventTouchUpInside];
-    [customMapBtn setImage:[UIImage imageNamed:@"annotation"] forState:UIControlStateNormal];
+    [customMapBtn setImage:[UIImage imageNamed:@"location.png"] forState:UIControlStateNormal];
     
     UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc]initWithCustomView:customMapBtn];
     self.navigationItem.rightBarButtonItem = rightBarButton;
@@ -204,8 +215,6 @@
     arrTotalEvent=[[NSMutableArray alloc]initWithObjects:nil];
     
    }
-
-
 
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -276,10 +285,10 @@
 //        
 //        [ProfileImageButton setImageWithURL:[NSURL URLWithString:ImagePath] placeholderImage:[UIImage imageNamed:@"nouser.png"]];
 //        [cell.contentView addSubview:ProfileImageButton];
-//        
+        
       
         
-        UIImageView *imv = [[UIImageView alloc]initWithFrame:CGRectMake(7,55,264,4)];
+        UIImageView *imv = [[UIImageView alloc]initWithFrame:CGRectMake(18,60,284,4)];
         imv.image=[UIImage imageNamed:@"iPhone_11.png"];
         [cell addSubview:imv];
     
@@ -297,10 +306,8 @@
             
             
             CLLocation *location = [locationManager1 location];
-            CLLocationCoordinate2D coordinate = [location coordinate];
-            
-                
-            
+          
+                  
         for (int curL = 0; curL < [arrayToEvents count]; curL++) {
             
             double laaat = [[latitude objectAtIndex:curL]doubleValue];
@@ -329,7 +336,7 @@
        
        
         
-        UILabel *lblEventTime = [[UILabel alloc]initWithFrame :CGRectMake(232, 52, 10, 25)];
+        UILabel *lblEventTime = [[UILabel alloc]initWithFrame :CGRectMake(232, 58, 10, 25)];
         lblEventTime.font = [UIFont boldSystemFontOfSize:13];
         lblEventTime.textColor =[UIColor colorWithRed:100/255.0 green:100/255.0 blue:100/255.0 alpha:1.0f];
         lblEventTime.tag =11;
@@ -340,7 +347,7 @@
         
        
         NSDate *date = [NSDate date];
-        NSLog(@"Current Time: %@", date);//Current Time: 2013-07-02 06:33:25 +0000
+      //  NSLog(@"Current Time: %@", date);//Current Time: 2013-07-02 06:33:25 +0000
         
         
         
@@ -352,23 +359,23 @@
         
         NSString *dateString = [dateFormatter stringFromDate:date];
         
-        NSLog(@"%@",dateString);
+       // NSLog(@"%@",dateString);
         
         NSArray *subString1 = [dateString componentsSeparatedByString:@" "];
         NSInteger firstVal1 =  [[subString1 objectAtIndex:1]integerValue];
         NSString *thirdVal1 = [subString1 objectAtIndex:1];
-        NSString *secondVal1 = [subString1 objectAtIndex:0];
+//        NSString *secondVal1 = [subString1 objectAtIndex:0];
         
-        NSLog(@"Se%ddSVa%@",firstVal1,secondVal1);
+       // NSLog(@"Se%ddSVa%@",firstVal1,secondVal1);
         
-        NSLog(@"%@",thirdVal1);
+       // NSLog(@"%@",thirdVal1);
         
         NSArray *monthStr = [thirdVal1 componentsSeparatedByString:@":"];
         NSInteger monstr = [[monthStr objectAtIndex:1]integerValue];
-        NSLog(@"%d",monstr);
+       // NSLog(@"%d",monstr);
         
               
-        NSLog(@"%@",eventShedule);
+       // NSLog(@"%@",eventShedule);
         
         for (int valTime = 0; valTime<[arrayToEvents count]; valTime++) {
             
@@ -376,27 +383,27 @@
             NSArray *subString = [[eventShedule objectAtIndex:valTime] componentsSeparatedByString:@" "];
             NSInteger firstVal =  [[subString objectAtIndex:1]integerValue];
           //  NSInteger thirdVal =  [[subString objectAtIndex:2]integerValue];
-            NSString *secondVal = [subString objectAtIndex:0];
+//            NSString *secondVal = [subString objectAtIndex:0];
              NSString *thirdValue1 = [subString objectAtIndex:1];
             
-            NSLog(@"S%dSV%@",firstVal,secondVal);
+          //  NSLog(@"S%dSV%@",firstVal,secondVal);
             
             NSArray *monthStr1 = [thirdValue1 componentsSeparatedByString:@":"];
             NSInteger monstr1 = [[monthStr1 objectAtIndex:1]integerValue];
-            NSLog(@"%d",monstr1);
+           // NSLog(@"%d",monstr1);
 
             
           //  NSLog(@"%d",thirdVal);
             
-            int comVal = firstVal - firstVal1;
+            int comVal = abs(firstVal - firstVal1);
             
-            int comVal1 = monstr - monstr1;
+            int comVal1 = abs(monstr - monstr1);
             
-            NSLog(@"%i",comVal);
+          //  NSLog(@"%i",comVal);
             
-            NSLog(@"%i",comVal1);
+          //  NSLog(@"%i",comVal1);
             
-           NSString *hrStr = [NSString stringWithFormat:@"%i",comVal];
+            NSString *hrStr = [NSString stringWithFormat:@"%i",comVal];
             
             NSString *minStr = [NSString stringWithFormat:@"%i",comVal1];
             
@@ -417,7 +424,7 @@
         
         NSString *lblStrVal = @"Starts in";
         
-        UILabel *lblStrVa = [[UILabel alloc]initWithFrame :CGRectMake(190, 52, 40, 25)];
+        UILabel *lblStrVa = [[UILabel alloc]initWithFrame :CGRectMake(190, 58, 40, 25)];
         lblStrVa.font = [UIFont boldSystemFontOfSize:9];
         lblStrVa.tag =21;
         lblStrVa.backgroundColor = [UIColor clearColor];
@@ -427,7 +434,7 @@
         
         NSString *hrVal = @"hrs";
         
-        UILabel *hrVa = [[UILabel alloc]initWithFrame :CGRectMake(245, 52,15, 25)];
+        UILabel *hrVa = [[UILabel alloc]initWithFrame :CGRectMake(245, 58,15, 25)];
         hrVa.font = [UIFont boldSystemFontOfSize:9];
         hrVa.tag =22;
         hrVa.backgroundColor = [UIColor clearColor];
@@ -435,7 +442,7 @@
         hrVa.textAlignment = 0;
         [cell addSubview:hrVa];
         
-        UILabel *lblEventMin = [[UILabel alloc]initWithFrame :CGRectMake(263, 52, 15, 25)];
+        UILabel *lblEventMin = [[UILabel alloc]initWithFrame :CGRectMake(263, 58, 15, 25)];
         lblEventMin.font = [UIFont boldSystemFontOfSize:9];
         lblEventMin.tag =27;
         lblEventMin.backgroundColor = [UIColor clearColor];
@@ -446,7 +453,7 @@
 
         NSString *minVal = @"mins";
         
-        UILabel *minVa = [[UILabel alloc]initWithFrame :CGRectMake(280, 52,30, 25)];
+        UILabel *minVa = [[UILabel alloc]initWithFrame :CGRectMake(280, 58,30, 25)];
         minVa.font = [UIFont boldSystemFontOfSize:9];
         minVa.tag =28;
         minVa.backgroundColor = [UIColor clearColor];
@@ -475,6 +482,8 @@
             }
             
         }
+        
+        //menu.png
         
         
         UILabel *lblEventName = [[UILabel alloc]initWithFrame :CGRectMake(70, 5, 195, 25)];
@@ -512,9 +521,13 @@
         
         lblStr.textAlignment = 0;
         [cell addSubview:lblStr];
+        
+        UIImageView *pinImg = [[UIImageView alloc]initWithFrame:CGRectMake(2,62,14,12)];
+        pinImg.image=[UIImage imageNamed:@"orange_location.png"];
+        [cell addSubview:pinImg];
 
         
-        UILabel *lblEventSubDetails = [[UILabel alloc]initWithFrame :CGRectMake(5, 52, 175, 25)];
+        UILabel *lblEventSubDetails = [[UILabel alloc]initWithFrame :CGRectMake(17, 58, 150, 25)];
         lblEventSubDetails.font = [UIFont boldSystemFontOfSize:13];
         lblEventSubDetails.textColor =[UIColor colorWithRed:100/255.0 green:100/255.0 blue:100/255.0 alpha:1.0f];
         lblEventSubDetails.tag =19;
@@ -529,7 +542,11 @@
         lblEventSubDetails.textAlignment = 0;
         [cell addSubview:lblEventSubDetails];
         
-        NSLog(@"%@",eventType);
+        UIImageView *timeImg = [[UIImageView alloc]initWithFrame:CGRectMake(170,65,14,12)];
+        timeImg.image=[UIImage imageNamed:@"orange_location-08.png"];
+        [cell addSubview:timeImg];
+        
+       // NSLog(@"%@",eventType);
         
         
         
@@ -540,14 +557,9 @@
             if ([str isEqualToString:@"Music"]) {
                 
              
-                NSLog(@"%u",[eventType count]);
+               // NSLog(@"%i",valEvent);
                 
-                
-                UIImageView *image = [[UIImageView alloc]initWithFrame:CGRectMake(2,0,30,30)];
-                
-                image.image=[UIImage imageNamed:@"Orange-List_Music.png"];
-               
-                cell.imageView.image = image.image;
+                [cellImage insertObject:@"Orange-List_Music.png" atIndex:valEvent];
                 
                 
             }
@@ -555,21 +567,48 @@
             
             else if([str isEqualToString:@"Special Event"]) {
                 
-              NSLog(@"%@",[eventType objectAtIndex:indexPath.row]);
+                
+              [cellImage insertObject:@"Blue-List_Special-Events.png" atIndex:valEvent];
                 
                 
             }
             
             else if([str isEqualToString:@"Sports"]) {
                 
-             NSLog(@"%@",[eventType objectAtIndex:indexPath.row]);
+                
+             [cellImage insertObject:@"Blue-List_Sports.png" atIndex:valEvent];
                 
                 
             }
             
             else if([str isEqualToString:@"Comedy"]) {
                 
-                NSLog(@"%@",[eventType objectAtIndex:indexPath.row]);
+                
+                [cellImage insertObject:@"Blue-List_Comedy.png" atIndex:valEvent];
+                
+                
+            }
+            
+            else if([str isEqualToString:@"Art"]) {
+                
+                
+                [cellImage insertObject:@"Blue-List_Art.png" atIndex:valEvent];
+                
+                
+            }
+            
+            else if([str isEqualToString:@"Dance"]) {
+                
+                
+                [cellImage insertObject:@"Blue-List_Dance.png" atIndex:valEvent];
+                
+                
+            }
+            
+            else if([str isEqualToString:@"Theater"]) {
+                
+                
+                [cellImage insertObject:@"Blue-List_Theater.png" atIndex:valEvent];
                 
                 
             }
@@ -578,6 +617,10 @@
         }
         
     }
+    
+   // NSLog(@"%@",cellImage);
+    
+   cell.imageView.image = [UIImage imageNamed:[cellImage objectAtIndex:indexPath.row]];
     
     UIImage *image = [UIImage imageNamed:@"blue_arrow.png"];
     
@@ -604,7 +647,7 @@
    
     NSIndexPath *indexPath = [tblMyEvents indexPathForCell:cell];
    
-    NSLog(@"INDEX %@",indexPath);
+   // NSLog(@"INDEX %@",indexPath);
     
     NSString *stri = [description objectAtIndex:indexPath.row];
     

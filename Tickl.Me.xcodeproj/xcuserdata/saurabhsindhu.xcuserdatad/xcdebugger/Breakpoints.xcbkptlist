@@ -732,24 +732,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Tickl.Me/SearchDetail.m"
-         timestampString = "394447599.01435"
+         timestampString = "394638959.730762"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "278"
-         endingLineNumber = "278"
-         landmarkName = "-actionSheet:clickedButtonAtIndex:"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         filePath = "Tickl.Me/SearchDetail.m"
-         timestampString = "394448768.897376"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "487"
-         endingLineNumber = "487"
+         startingLineNumber = "482"
+         endingLineNumber = "482"
          landmarkName = "-actionSheet:clickedButtonAtIndex:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -810,11 +797,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Tickl.Me/SearchDetail.m"
-         timestampString = "394448768.897376"
+         timestampString = "394638959.730762"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "678"
-         endingLineNumber = "678"
+         startingLineNumber = "673"
+         endingLineNumber = "673"
          landmarkName = "-clickMenu"
          landmarkType = "5">
       </FileBreakpoint>
@@ -823,11 +810,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Tickl.Me/SearchDetail.m"
-         timestampString = "394448768.897376"
+         timestampString = "394638959.730762"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "687"
-         endingLineNumber = "687"
+         startingLineNumber = "682"
+         endingLineNumber = "682"
          landmarkName = "-clickMenu"
          landmarkType = "5">
       </FileBreakpoint>
@@ -836,24 +823,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Tickl.Me/SearchDetail.m"
-         timestampString = "394447599.01435"
+         timestampString = "394638959.730762"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "269"
-         endingLineNumber = "269"
-         landmarkName = "-actionSheet:clickedButtonAtIndex:"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         filePath = "Tickl.Me/SearchDetail.m"
-         timestampString = "394448768.897376"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "647"
-         endingLineNumber = "647"
+         startingLineNumber = "642"
+         endingLineNumber = "642"
          landmarkName = "@implementation SearchDetail"
          landmarkType = "3">
       </FileBreakpoint>
@@ -900,12 +874,77 @@
          shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "Tickl.Me/EventListViewViewController.m"
-         timestampString = "394553905.123474"
+         filePath = "Tickl.Me/MapView_ViewController.m"
+         timestampString = "394695848.717411"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "558"
-         endingLineNumber = "558"
+         startingLineNumber = "62"
+         endingLineNumber = "62"
+         landmarkName = "-gotoLocation"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "Tickl.Me/MapView_ViewController.m"
+         timestampString = "394695848.717411"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "73"
+         endingLineNumber = "73"
+         landmarkName = "-gotoLocation"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "Tickl.Me/MapView_ViewController.m"
+         timestampString = "394701978.879365"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "550"
+         endingLineNumber = "550"
+         landmarkName = "-mapView:viewForAnnotation:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "Tickl.Me/MapView_ViewController.m"
+         timestampString = "394695863.564484"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "277"
+         endingLineNumber = "277"
+         landmarkName = "-clickMore:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "Tickl.Me/MapView_ViewController.m"
+         timestampString = "394702173.96873"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "403"
+         endingLineNumber = "403"
+         landmarkName = "-clickLess:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "Tickl.Me/ViewFriendListViewController.m"
+         timestampString = "394714731.29937"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "187"
+         endingLineNumber = "187"
          landmarkName = "-tableView:cellForRowAtIndexPath:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -913,39 +952,26 @@
          shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "Tickl.Me/EventListViewViewController.m"
-         timestampString = "394553906.283404"
+         filePath = "Tickl.Me/ViewFriendListViewController.m"
+         timestampString = "394714660.564741"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "565"
-         endingLineNumber = "565"
-         landmarkName = "-tableView:cellForRowAtIndexPath:"
+         startingLineNumber = "259"
+         endingLineNumber = "259"
+         landmarkName = "-sendInvitaionFormApp:"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "Tickl.Me/EventListViewViewController.m"
-         timestampString = "394553910.11132"
+         filePath = "Tickl.Me/AppDelegate.m"
+         timestampString = "394721583.070671"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "543"
-         endingLineNumber = "543"
-         landmarkName = "-tableView:cellForRowAtIndexPath:"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         filePath = "Tickl.Me/EventListViewViewController.m"
-         timestampString = "394553914.518966"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "532"
-         endingLineNumber = "532"
-         landmarkName = "-tableView:cellForRowAtIndexPath:"
+         startingLineNumber = "162"
+         endingLineNumber = "162"
+         landmarkName = "-application:didRegisterForRemoteNotificationsWithDeviceToken:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>
